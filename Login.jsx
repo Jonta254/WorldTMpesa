@@ -1,20 +1,35 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { MiniKit } from "@worldcoin/minikit-js";
+import { WORLD_APP_ID } from "../config/world";
 
-export default function Login() {
-  const [phone, setPhone] = useState("");
-  const nav = useNavigate();
+export default function WorldIdLogin() {
 
-  const login = () => {
-    localStorage.setItem("user", JSON.stringify({ phone }));
-    nav("/");
+  const login = async () => {
+    try {
+      const res = await MiniKit.commandsAsync.verify({
+        app_id: WORLD_APP_ID,
+        action: "login",
+        signal: "worldtmpesa-user"
+      });
+
+      if (res.success) {
+        localStorage.setItem("user", JSON.stringify({
+          worldId: res.nullifier_hash
+        }));
+
+        window.location.href = "/";
+      }
+    } catch (err) {
+      console.log("World ID login failed", err);
+      alert("Verification failed");
+    }
   };
 
   return (
     <div className="container">
-      <h2>Login</h2>
-      <input className="input" onChange={e=>setPhone(e.target.value)} placeholder="Phone" />
-      <button className="btn" onClick={login}>Login</button>
+      <h2>🌍 World ID Verification</h2>
+      <button className="btn" onClick={login}>
+        Continue with World ID
+      </button>
     </div>
   );
 }
