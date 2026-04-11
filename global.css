@@ -1,0 +1,50 @@
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0b0f1a;
+  color:white;
+}
+
+.container{padding:16px;}
+
+.nav{
+  display:flex;
+  gap:10px;
+  padding:10px;
+  background:#11182a;
+}
+
+.nav a{color:white;text-decoration:none;}
+
+.card{
+  background:#151c2f;
+  padding:12px;
+  margin:10px 0;
+  border-radius:10px;
+}
+
+.input{
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+  border-radius:8px;
+  border:none;
+}
+
+.btn{
+  width:100%;
+  padding:12px;
+  background:#4f7cff;
+  border:none;
+  color:white;
+  border-radius:8px;
+  margin-top:10px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+
+.sub{opacity:0.7;}
