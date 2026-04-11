@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createOrder, updateOrder } from "../services/orderService";
+import { sendEmail } from "../services/emailService";
 
 export default function Sell() {
   const [amount, setAmount] = useState("");
@@ -11,24 +12,41 @@ export default function Sell() {
   const placeOrder = async () => {
     const user = JSON.parse(localStorage.getItem("user"));
 
-    const id = await createOrder({
+    const order = {
       type: "sell",
       amount,
       kes: amount * rate,
       phone: user?.phone,
       status: "pending",
       createdAt: new Date().toISOString()
-    });
+    };
 
+    const id = await createOrder(order);
     setOrderId(id);
+
+    // 📧 EMAIL ALERT (ORDER CREATED)
+    await sendEmail(order);
+
+    alert("Order placed successfully");
   };
 
   const markSent = async () => {
-    await updateOrder(orderId, {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    const updatedOrder = {
+      type: "sell",
+      amount,
+      phone: user?.phone,
       status: "paid",
       txRef
-    });
-    alert("Marked as sent. Waiting for admin.");
+    };
+
+    await updateOrder(orderId, updatedOrder);
+
+    // 📧 EMAIL ALERT (USER SENT FUNDS)
+    await sendEmail(updatedOrder);
+
+    alert("Marked as sent. Waiting for admin confirmation.");
   };
 
   return (
@@ -64,7 +82,7 @@ export default function Sell() {
           />
 
           <button className="btn" onClick={markSent}>
-           SENT
+            SENT
           </button>
         </>
       )}
