@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createOrder, updateOrder } from "../services/orderService";
+import { sendEmail } from "../services/emailService";
 
 export default function Buy() {
   const [amount, setAmount] = useState("");
@@ -12,7 +13,7 @@ export default function Buy() {
   const placeOrder = async () => {
     const user = JSON.parse(localStorage.getItem("user"));
 
-    const id = await createOrder({
+    const order = {
       type: "buy",
       amount,
       wallet,
@@ -20,17 +21,35 @@ export default function Buy() {
       phone: user?.phone,
       status: "pending",
       createdAt: new Date().toISOString()
-    });
+    };
 
+    const id = await createOrder(order);
     setOrderId(id);
+
+    // 📧 EMAIL ALERT (ORDER CREATED)
+    await sendEmail(order);
+
+    alert("Buy order placed successfully");
   };
 
   const markPaid = async () => {
-    await updateOrder(orderId, {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    const updatedOrder = {
+      type: "buy",
+      amount,
+      wallet,
+      phone: user?.phone,
       status: "paid",
       txRef
-    });
-    alert("Payment submitted. Waiting for WLD.");
+    };
+
+    await updateOrder(orderId, updatedOrder);
+
+    // 📧 EMAIL ALERT (PAYMENT SUBMITTED)
+    await sendEmail(updatedOrder);
+
+    alert("Payment submitted. Waiting for confirmation.");
   };
 
   return (
@@ -67,7 +86,7 @@ export default function Buy() {
 
           <input
             className="input"
-            placeholder="M-Pesa Code"
+            placeholder="M-Pesa Transaction Code"
             onChange={e => setTxRef(e.target.value)}
           />
 
