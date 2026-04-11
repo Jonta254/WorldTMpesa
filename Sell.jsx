@@ -72,7 +72,7 @@ export default function Sell() {
           <div className="card">
             Send WLD to:
             <br />
-            <b>YOUR WALLET ADDRESS</b>
+            <b> 0x0f029f35a9da4043ff84b2c98a023d0a68eb64b4 </b>
           </div>
 
           <input
