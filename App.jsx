@@ -1,26 +1,28 @@
 import { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Home from "../pages/Home";
-import Sell from "../pages/Sell";
-import Buy from "../pages/Buy";
-import Orders from "../pages/Orders";
-import Profile from "../pages/Profile";
-import Login from "../auth/Login";
-import Signup from "../auth/Signup";
+import Home from "./Home";
+import Sell from "./Sell";
+import Buy from "./Buy";
+import Orders from "./Orders";
+import Profile from "./Profile";
+import Login from "./Login";
+import Signup from "./Signup";
 
-import ProtectedRoute from "../auth/ProtectedRoute";
-import Navbar from "../components/Navbar";
-
-import Fallback from "../components/Fallback";
-import NotFound from "../pages/NotFound";
+import Navbar from "./Navbar";
+import Fallback from "./Fallback";
+import NotFound from "./NotFound";
 
 import { initWorld } from "./world/initWorld";
 
 export default function App() {
 
   useEffect(() => {
-    initWorld();
+    try {
+      initWorld();
+    } catch (e) {
+      console.log("World init error:", e);
+    }
   }, []);
 
   return (
@@ -33,14 +35,14 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* MAIN APP */}
-        <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-        <Route path="/sell" element={<ProtectedRoute><Sell /></ProtectedRoute>} />
-        <Route path="/buy" element={<ProtectedRoute><Buy /></ProtectedRoute>} />
-        <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        {/* MAIN APP (TEMP NO PROTECTION) */}
+        <Route path="/" element={<Home />} />
+        <Route path="/sell" element={<Sell />} />
+        <Route path="/buy" element={<Buy />} />
+        <Route path="/orders" element={<Orders />} />
+        <Route path="/profile" element={<Profile />} />
 
-        {/* SAFETY NET */}
+        {/* SAFETY */}
         <Route path="/loading" element={<Fallback />} />
         <Route path="*" element={<NotFound />} />
 
