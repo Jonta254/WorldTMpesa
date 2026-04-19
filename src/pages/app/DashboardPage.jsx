@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
 import { APP_CONFIG, getCurrentUser, getOrdersForCurrentUser, getWorldAppContext } from "../../services";
-import { useExchangeRate } from "../../hooks/useExchangeRate";
+import { useExchangeRates } from "../../hooks/useExchangeRate";
 
 function DashboardPage() {
   const user = getCurrentUser();
   const worldApp = getWorldAppContext();
-  const exchangeRate = useExchangeRate();
+  const exchangeRates = useExchangeRates();
   const orders = getOrdersForCurrentUser();
   const pendingOrders = orders.filter((order) => order.status === "pending").length;
   const paidOrders = orders.filter((order) => order.status === "paid").length;
@@ -18,15 +18,15 @@ function DashboardPage() {
           <div className="stack">
             <span className="brand-kicker">Inside World App</span>
             <div>
-              <h2 className="brand-title">{APP_CONFIG.appName} for WLD, USDC and M-Pesa.</h2>
+              <h2 className="brand-title">{APP_CONFIG.appName} for WLD, USDT and M-Pesa.</h2>
               <p className="brand-copy">
                 Welcome {user?.fullName}. This mini app keeps the exchange flow lightweight inside
                 World App while the admin confirms each order manually.
               </p>
             </div>
             <div className="amount-line">
-              <span>Current admin rate</span>
-              <strong>KES {exchangeRate} per WLD</strong>
+              <span>Current admin rates</span>
+              <strong>WLD: KES {exchangeRates.WLD} | USDT: KES {exchangeRates.USDT}</strong>
             </div>
             <div className="info-grid">
               <div className="info-box">

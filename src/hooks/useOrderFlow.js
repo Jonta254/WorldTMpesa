@@ -10,7 +10,7 @@ export function useOrderFlow(type, initialAsset = "WLD") {
   const [step, setStep] = useState(1);
   const [currentOrder, setCurrentOrder] = useState(null);
   const [error, setError] = useState("");
-  const exchangeRate = useExchangeRate();
+  const exchangeRate = useExchangeRate(asset);
 
   const kesAmount = useMemo(() => {
     const parsedAmount = Number(cryptoAmount);

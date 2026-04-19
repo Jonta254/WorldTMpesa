@@ -29,7 +29,7 @@ function SellPage() {
             This is a manual exchange flow. Once you send crypto and submit your transaction hash,
             the admin will review and complete your payout later.
           </p>
-          <p className="muted">Current admin rate: KES {exchangeRate} per WLD.</p>
+          <p className="muted">Current admin rate: KES {exchangeRate} per {asset}.</p>
         </div>
 
         {error ? <div className="error">{error}</div> : null}
@@ -113,8 +113,8 @@ function SellPage() {
       <aside className="summary-card stack">
         <h3>Sell Instructions</h3>
         <ul className="list-reset">
-          <li>1. Enter the amount of WLD you want to sell.</li>
-          <li>Use WLD or USDC depending on the asset selected.</li>
+          <li>1. Enter the amount of crypto you want to sell.</li>
+          <li>Use WLD or USDT depending on the asset selected.</li>
           <li>2. Confirm the KES value at the current admin rate.</li>
           <li>3. Send crypto to the displayed wallet address.</li>
           <li>4. Paste the transaction hash and mark the order as paid.</li>

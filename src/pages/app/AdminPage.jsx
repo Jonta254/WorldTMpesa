@@ -1,19 +1,24 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import OrderCard from "../../components/orders/OrderCard";
-import { getAllOrders, getCurrentUser, getExchangeRate, updateExchangeRate, updateOrder } from "../../services";
-import { useExchangeRate } from "../../hooks/useExchangeRate";
+import { getAllOrders, getCurrentUser, getExchangeRates, updateExchangeRates, updateOrder } from "../../services";
+import { useExchangeRates } from "../../hooks/useExchangeRate";
 
 function AdminPage() {
   const user = getCurrentUser();
-  const liveRate = useExchangeRate();
+  const liveRates = useExchangeRates();
 
   if (!user?.isAdmin) {
     return <Navigate to="/" replace />;
   }
 
   const [orders, setOrders] = useState(getAllOrders());
-  const [rateInput, setRateInput] = useState(String(getExchangeRate()));
+  const [rateInputs, setRateInputs] = useState(() =>
+    Object.entries(getExchangeRates()).reduce((accumulator, [asset, rate]) => {
+      accumulator[asset] = String(rate);
+      return accumulator;
+    }, {}),
+  );
   const [rateMessage, setRateMessage] = useState("");
   const [rateError, setRateError] = useState("");
 
@@ -27,9 +32,14 @@ function AdminPage() {
     setRateMessage("");
 
     try {
-      const nextRate = updateExchangeRate(rateInput);
-      setRateInput(String(nextRate));
-      setRateMessage(`Exchange rate updated to KES ${nextRate} per WLD.`);
+      const nextRates = updateExchangeRates(rateInputs);
+      setRateInputs(
+        Object.entries(nextRates).reduce((accumulator, [asset, rate]) => {
+          accumulator[asset] = String(rate);
+          return accumulator;
+        }, {}),
+      );
+      setRateMessage("Exchange rates updated successfully.");
     } catch (error) {
       setRateError(error.message);
     }
@@ -53,31 +63,53 @@ function AdminPage() {
           <div>
             <h3>Exchange Rate Control</h3>
             <p className="muted">
-              Update the current WLD to KES rate here. Buy and sell calculations will use this
-              value immediately.
+              Update the current KES rates for WLD and USDT here. Buy and sell calculations will
+              use the selected asset rate immediately.
             </p>
           </div>
-          <div className="tag">Live rate: KES {liveRate}</div>
+          <div className="stack">
+            <div className="tag">WLD: KES {liveRates.WLD}</div>
+            <div className="tag">USDT: KES {liveRates.USDT}</div>
+          </div>
         </div>
 
         {rateError ? <div className="error">{rateError}</div> : null}
         {rateMessage ? <div className="notice">{rateMessage}</div> : null}
 
-        <div className="field">
-          <label htmlFor="exchangeRate">KES per WLD</label>
-          <input
-            id="exchangeRate"
-            type="number"
-            min="1"
-            step="0.01"
-            value={rateInput}
-            onChange={(event) => setRateInput(event.target.value)}
-            placeholder="120"
-          />
+        <div className="info-grid">
+          <div className="field">
+            <label htmlFor="rateWld">KES per WLD</label>
+            <input
+              id="rateWld"
+              type="number"
+              min="1"
+              step="0.01"
+              value={rateInputs.WLD || ""}
+              onChange={(event) =>
+                setRateInputs((current) => ({ ...current, WLD: event.target.value }))
+              }
+              placeholder="120"
+            />
+          </div>
+
+          <div className="field">
+            <label htmlFor="rateUsdt">KES per USDT</label>
+            <input
+              id="rateUsdt"
+              type="number"
+              min="1"
+              step="0.01"
+              value={rateInputs.USDT || ""}
+              onChange={(event) =>
+                setRateInputs((current) => ({ ...current, USDT: event.target.value }))
+              }
+              placeholder="128"
+            />
+          </div>
         </div>
 
         <button type="button" className="button" onClick={handleRateSave}>
-          Save Exchange Rate
+          Save Rates
         </button>
       </section>
 

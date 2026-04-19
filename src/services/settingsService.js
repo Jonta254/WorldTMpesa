@@ -10,39 +10,70 @@ function emitRateUpdate(nextRate) {
 export function initializeSettings() {
   const settings = readStorage(STORAGE_KEYS.settings, null);
 
-  if (!settings || typeof settings.rateKesPerWld !== "number") {
+  if (!settings || !settings.ratesKes) {
     writeStorage(STORAGE_KEYS.settings, {
-      rateKesPerWld: APP_CONFIG.defaultRateKesPerWld,
+      ratesKes: APP_CONFIG.defaultRatesKes,
+    });
+    return;
+  }
+
+  if (typeof settings.rateKesPerWld === "number" && !settings.ratesKes.WLD) {
+    writeStorage(STORAGE_KEYS.settings, {
+      ratesKes: {
+        ...APP_CONFIG.defaultRatesKes,
+        WLD: settings.rateKesPerWld,
+      },
+      updatedAt: settings.updatedAt || new Date().toISOString(),
     });
   }
 }
 
 export function getSettings() {
   return readStorage(STORAGE_KEYS.settings, {
-    rateKesPerWld: APP_CONFIG.defaultRateKesPerWld,
+    ratesKes: APP_CONFIG.defaultRatesKes,
   });
 }
 
-export function getExchangeRate() {
-  return getSettings().rateKesPerWld || APP_CONFIG.defaultRateKesPerWld;
+export function getExchangeRates() {
+  const settings = getSettings();
+
+  return {
+    ...APP_CONFIG.defaultRatesKes,
+    ...(settings.ratesKes || {}),
+  };
 }
 
-export function updateExchangeRate(nextRate) {
-  const parsedRate = Number(nextRate);
+export function getExchangeRate(asset = "WLD") {
+  return getExchangeRates()[asset] || APP_CONFIG.defaultRatesKes[asset] || 0;
+}
 
-  if (!parsedRate || parsedRate <= 0) {
-    throw new Error("Enter a valid exchange rate above zero.");
-  }
+export function updateExchangeRates(nextRates) {
+  const parsedRates = Object.entries(nextRates).reduce((accumulator, [asset, value]) => {
+    const parsedRate = Number(value);
+
+    if (!parsedRate || parsedRate <= 0) {
+      throw new Error(`Enter a valid exchange rate above zero for ${asset}.`);
+    }
+
+    accumulator[asset] = parsedRate;
+    return accumulator;
+  }, {});
+
+  const previousSettings = getSettings();
 
   const settings = {
-    ...getSettings(),
-    rateKesPerWld: parsedRate,
+    ...previousSettings,
+    ratesKes: {
+      ...APP_CONFIG.defaultRatesKes,
+      ...(previousSettings.ratesKes || {}),
+      ...parsedRates,
+    },
     updatedAt: new Date().toISOString(),
   };
 
   writeStorage(STORAGE_KEYS.settings, settings);
-  emitRateUpdate(parsedRate);
-  return settings.rateKesPerWld;
+  emitRateUpdate(settings.ratesKes);
+  return settings.ratesKes;
 }
 
 export function subscribeToRateUpdates(callback) {
