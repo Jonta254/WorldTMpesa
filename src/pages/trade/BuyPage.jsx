@@ -15,6 +15,7 @@ function BuyPage() {
     currentOrder,
     error,
     kesAmount,
+    exchangeRate,
     placeOrder,
     markAsPaid,
     supportedAssets,
@@ -30,6 +31,7 @@ function BuyPage() {
             Place your order, send the payment manually through M-Pesa, then share the transaction
             code so the admin can confirm and send your crypto.
           </p>
+          <p className="muted">Current admin rate: KES {exchangeRate} per WLD.</p>
         </div>
 
         {error ? <div className="error">{error}</div> : null}

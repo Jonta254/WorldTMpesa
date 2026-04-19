@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
 import { APP_CONFIG, getCurrentUser, getOrdersForCurrentUser, getWorldAppContext } from "../../services";
+import { useExchangeRate } from "../../hooks/useExchangeRate";
 
 function DashboardPage() {
   const user = getCurrentUser();
   const worldApp = getWorldAppContext();
+  const exchangeRate = useExchangeRate();
   const orders = getOrdersForCurrentUser();
   const pendingOrders = orders.filter((order) => order.status === "pending").length;
   const paidOrders = orders.filter((order) => order.status === "paid").length;
@@ -23,8 +25,8 @@ function DashboardPage() {
               </p>
             </div>
             <div className="amount-line">
-              <span>Current fixed rate</span>
-              <strong>KES {APP_CONFIG.rateKesPerWld} per WLD</strong>
+              <span>Current admin rate</span>
+              <strong>KES {exchangeRate} per WLD</strong>
             </div>
             <div className="info-grid">
               <div className="info-box">

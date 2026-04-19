@@ -14,4 +14,11 @@ export {
   initializeOrders,
   updateOrder,
 } from "./orderService";
+export {
+  getExchangeRate,
+  getSettings,
+  initializeSettings,
+  subscribeToRateUpdates,
+  updateExchangeRate,
+} from "./settingsService";
 export { connectWithWorldAppWallet, getWorldAppContext } from "./worldAppService";

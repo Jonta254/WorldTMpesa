@@ -1,7 +1,7 @@
 export const APP_CONFIG = {
   appName: "TMpesa",
   repoName: "WorldTMpesa",
-  rateKesPerWld: 120,
+  defaultRateKesPerWld: 120,
   supportedAssets: ["WLD", "USDC"],
   sellWalletAddress: "0xWORLDTMPESA-WLD-WALLET-001",
   paybillNumber: "522522",
@@ -13,4 +13,5 @@ export const STORAGE_KEYS = {
   users: "worldtmpesa_users",
   currentUser: "worldtmpesa_current_user",
   orders: "worldtmpesa_orders",
+  settings: "worldtmpesa_settings",
 };

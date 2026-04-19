@@ -13,8 +13,8 @@ function AuthHero() {
 
       <div className="stats-grid">
         <div className="mini-stat">
-          Fixed rate
-          <strong>KES 120 / WLD</strong>
+          Admin-set rate
+          <strong>Editable in dashboard</strong>
         </div>
         <div className="mini-stat">
           Wallet layer

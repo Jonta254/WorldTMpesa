@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { APP_CONFIG, createOrder, updateOrder } from "../services";
+import { useExchangeRate } from "./useExchangeRate";
 
 export function useOrderFlow(type, initialAsset = "WLD") {
   const [asset, setAsset] = useState(initialAsset);
@@ -9,6 +10,7 @@ export function useOrderFlow(type, initialAsset = "WLD") {
   const [step, setStep] = useState(1);
   const [currentOrder, setCurrentOrder] = useState(null);
   const [error, setError] = useState("");
+  const exchangeRate = useExchangeRate();
 
   const kesAmount = useMemo(() => {
     const parsedAmount = Number(cryptoAmount);
@@ -16,8 +18,8 @@ export function useOrderFlow(type, initialAsset = "WLD") {
       return 0;
     }
 
-    return parsedAmount * APP_CONFIG.rateKesPerWld;
-  }, [cryptoAmount]);
+    return parsedAmount * exchangeRate;
+  }, [cryptoAmount, exchangeRate]);
 
   const placeOrder = () => {
     setError("");
@@ -83,6 +85,7 @@ export function useOrderFlow(type, initialAsset = "WLD") {
     currentOrder,
     error,
     kesAmount,
+    exchangeRate,
     placeOrder,
     markAsPaid,
     supportedAssets: APP_CONFIG.supportedAssets,
