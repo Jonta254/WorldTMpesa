@@ -1,0 +1,134 @@
+import { APP_CONFIG } from "../../config/appConfig";
+import { useOrderFlow } from "../../hooks/useOrderFlow";
+
+function BuyPage() {
+  const {
+    asset,
+    setAsset,
+    cryptoAmount,
+    setCryptoAmount,
+    walletAddress,
+    setWalletAddress,
+    paymentReference,
+    setPaymentReference,
+    step,
+    currentOrder,
+    error,
+    kesAmount,
+    placeOrder,
+    markAsPaid,
+    supportedAssets,
+  } = useOrderFlow("buy");
+
+  return (
+    <div className="content-grid">
+      <section className="panel stack">
+        <span className="brand-kicker">Buy Flow</span>
+        <div>
+          <h2>Buy WLD using M-Pesa</h2>
+          <p className="muted">
+            Place your order, send the payment manually through M-Pesa, then share the transaction
+            code so the admin can confirm and send your crypto.
+          </p>
+        </div>
+
+        {error ? <div className="error">{error}</div> : null}
+
+        {step === 1 ? (
+          <div className="stack">
+            <div className="field">
+              <label htmlFor="buyAsset">Asset</label>
+              <select id="buyAsset" value={asset} onChange={(event) => setAsset(event.target.value)}>
+                {supportedAssets.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="field">
+              <label htmlFor="buyAmount">Amount of {asset}</label>
+              <input
+                id="buyAmount"
+                type="number"
+                min="0"
+                step="0.01"
+                value={cryptoAmount}
+                onChange={(event) => setCryptoAmount(event.target.value)}
+                placeholder="25"
+              />
+            </div>
+
+            <div className="field">
+              <label htmlFor="walletAddress">Wallet Address</label>
+              <input
+                id="walletAddress"
+                value={walletAddress}
+                onChange={(event) => setWalletAddress(event.target.value)}
+                placeholder="0xYourWalletAddress"
+              />
+            </div>
+
+            <div className="amount-line">
+              <span>Amount to pay</span>
+              <strong>KES {kesAmount.toLocaleString()}</strong>
+            </div>
+
+            <button type="button" className="button" onClick={placeOrder}>
+              Place Order
+            </button>
+          </div>
+        ) : null}
+
+        {step >= 2 && currentOrder ? (
+          <div className="stack">
+            <div className="info-box">
+              <strong>M-Pesa payment instructions</strong>
+              <code>Paybill: {APP_CONFIG.paybillNumber}</code>
+              <code>Business Name: {APP_CONFIG.tillName}</code>
+              <code>Amount: KES {currentOrder.kesAmount.toLocaleString()}</code>
+            </div>
+
+            {step === 2 ? (
+              <>
+                <div className="field">
+                  <label htmlFor="mpesaCode">M-Pesa Transaction Code</label>
+                  <input
+                    id="mpesaCode"
+                    value={paymentReference}
+                    onChange={(event) => setPaymentReference(event.target.value)}
+                    placeholder="QWE123XYZ"
+                  />
+                </div>
+
+                <button type="button" className="button" onClick={() => markAsPaid(paymentReference)}>
+                  I HAVE PAID
+                </button>
+              </>
+            ) : null}
+
+            {step === 3 ? (
+              <div className="notice">
+                Order marked as <strong>paid</strong>. The admin will verify your M-Pesa payment and
+                send the crypto to your wallet after confirmation.
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+      </section>
+
+      <aside className="summary-card stack">
+        <h3>Buy Instructions</h3>
+        <ul className="list-reset">
+          <li>1. Choose the asset and amount you want to buy.</li>
+          <li>2. Provide the destination wallet address.</li>
+          <li>3. Pay the shown KES amount via M-Pesa.</li>
+          <li>4. Submit the transaction code to mark the order as paid.</li>
+        </ul>
+      </aside>
+    </div>
+  );
+}
+
+export default BuyPage;

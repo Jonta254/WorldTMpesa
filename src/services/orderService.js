@@ -1,0 +1,66 @@
+import { STORAGE_KEYS } from "../config/appConfig";
+import { getCurrentUser } from "./authService";
+import { readStorage, writeStorage } from "./localStorage";
+
+export function initializeOrders() {
+  if (!localStorage.getItem(STORAGE_KEYS.orders)) {
+    writeStorage(STORAGE_KEYS.orders, []);
+  }
+}
+
+export function getAllOrders() {
+  return readStorage(STORAGE_KEYS.orders, []);
+}
+
+export function getOrdersForCurrentUser() {
+  const currentUser = getCurrentUser();
+  const orders = getAllOrders();
+
+  if (!currentUser) {
+    return [];
+  }
+
+  if (currentUser.isAdmin) {
+    return orders;
+  }
+
+  return orders.filter((order) => order.userId === currentUser.id);
+}
+
+export function createOrder(payload) {
+  const orders = getAllOrders();
+  const currentUser = getCurrentUser();
+
+  if (!currentUser) {
+    throw new Error("You must be logged in to place an order.");
+  }
+
+  const order = {
+    id: crypto.randomUUID(),
+    userId: currentUser.id,
+    userPhone: currentUser.phone,
+    userWalletAddress: currentUser.walletAddress || "",
+    userLabel: currentUser.username || currentUser.fullName || currentUser.phone,
+    type: payload.type,
+    asset: payload.asset,
+    cryptoAmount: Number(payload.cryptoAmount),
+    kesAmount: Number(payload.kesAmount),
+    walletAddress: payload.walletAddress || "",
+    paymentReference: payload.paymentReference || "",
+    status: "pending",
+    createdAt: new Date().toISOString(),
+  };
+
+  writeStorage(STORAGE_KEYS.orders, [order, ...orders]);
+  return order;
+}
+
+export function updateOrder(orderId, changes) {
+  const orders = getAllOrders();
+  const updatedOrders = orders.map((order) =>
+    order.id === orderId ? { ...order, ...changes, updatedAt: new Date().toISOString() } : order,
+  );
+
+  writeStorage(STORAGE_KEYS.orders, updatedOrders);
+  return updatedOrders.find((order) => order.id === orderId);
+}
