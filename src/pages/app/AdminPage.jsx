@@ -227,7 +227,7 @@ function AdminPage() {
                   supportEmail: event.target.value,
                 }))
               }
-              placeholder="brianokind02022@gmail.com"
+              placeholder="brianokindo2022@gmail.com"
             />
           </div>
 

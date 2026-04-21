@@ -2,6 +2,7 @@ import { APP_CONFIG, STORAGE_KEYS } from "../config/appConfig";
 import { readStorage, writeStorage } from "./localStorage";
 
 const SETTINGS_UPDATED_EVENT = "worldtmpesa:settings-updated";
+const LEGACY_SELL_WALLET_ADDRESS = "0xWORLDTMPESA-WLD-WALLET-001";
 
 function getDefaultSettings() {
   return {
@@ -38,6 +39,10 @@ export function initializeSettings() {
 
   if (typeof settings.rateKesPerWld === "number" && !settings.ratesKes?.WLD) {
     nextSettings.ratesKes.WLD = settings.rateKesPerWld;
+  }
+
+  if (nextSettings.sellWalletAddress === LEGACY_SELL_WALLET_ADDRESS) {
+    nextSettings.sellWalletAddress = APP_CONFIG.defaultSettings.sellWalletAddress;
   }
 
   writeStorage(STORAGE_KEYS.settings, nextSettings);
