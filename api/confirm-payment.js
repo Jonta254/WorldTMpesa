@@ -12,7 +12,9 @@ export default async function handler(req, res) {
     const cookies = parseCookies(req);
     const expectedReference = cookies.tmpesa_payment_reference;
 
-    if (!payload?.transactionId || !payload?.reference) {
+    const transactionId = payload?.transactionId || payload?.transaction_id;
+
+    if (!transactionId || !payload?.reference) {
       sendJson(res, 400, { verified: false, error: "Missing transaction payload." });
       return;
     }
@@ -30,7 +32,7 @@ export default async function handler(req, res) {
         verified: false,
         transactionStatus: "verification_unconfigured",
         reference: payload.reference,
-        transactionId: payload.transactionId,
+        transactionId,
         warning: "APP_ID and DEV_PORTAL_API_KEY must be configured to verify World payments.",
       });
       return;
@@ -38,7 +40,7 @@ export default async function handler(req, res) {
 
     const { appId, apiKey } = getWorldPortalConfig();
     const response = await fetch(
-      `https://developer.worldcoin.org/api/v2/minikit/transaction/${payload.transactionId}?app_id=${appId}&type=payment`,
+      `https://developer.worldcoin.org/api/v2/minikit/transaction/${transactionId}?app_id=${appId}&type=payment`,
       {
         method: "GET",
         headers: {
@@ -69,7 +71,7 @@ export default async function handler(req, res) {
       verified: transaction?.transaction_status === "mined",
       transactionStatus: transaction?.transaction_status || "unknown",
       reference: payload.reference,
-      transactionId: payload.transactionId,
+      transactionId,
       transaction,
     });
   } catch (error) {

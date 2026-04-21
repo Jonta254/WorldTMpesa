@@ -10,7 +10,7 @@ import { getSettings } from "./settingsService";
 
 const TOKEN_DECIMALS = {
   WLD: 18,
-  USDT: 6,
+  USDC: 6,
 };
 
 function toTokenUnits(amount, decimals) {
@@ -25,6 +25,27 @@ function toTokenUnits(amount, decimals) {
   const units = `${wholePart}${normalizedFraction}`.replace(/^0+(?=\d)/, "");
 
   return units || "0";
+}
+
+async function runMiniKitCommand(commandName, payload) {
+  const command = MiniKit.commandsAsync?.[commandName] || MiniKit[commandName];
+
+  if (!command) {
+    throw new Error(`World App command ${commandName} is not available in this MiniKit version.`);
+  }
+
+  const result = await command.call(MiniKit.commandsAsync || MiniKit, payload);
+  const finalPayload = result?.finalPayload || result?.data || result;
+
+  if (finalPayload?.status === "error") {
+    throw new Error(finalPayload?.message || `World App ${commandName} command was cancelled.`);
+  }
+
+  if (result?.executedWith === "fallback") {
+    throw new Error(`Complete ${commandName} inside World App.`);
+  }
+
+  return { result, finalPayload };
 }
 
 export function getWorldAppContext() {
@@ -54,17 +75,13 @@ export async function connectWithWorldAppWallet() {
   }
 
   const { nonce } = await requestServerNonce();
-  const result = await MiniKit.walletAuth({
+  const { finalPayload } = await runMiniKitCommand("walletAuth", {
     nonce,
     statement: "Sign in to TMpesa inside World App",
     expirationTime: new Date(Date.now() + 1000 * 60 * 10),
   });
 
-  if (result.executedWith === "fallback") {
-    throw new Error("Wallet authentication fell back to the browser flow.");
-  }
-
-  const verification = await completeSiweVerification(result.data, nonce);
+  const verification = await completeSiweVerification(finalPayload, nonce);
 
   if (!verification.isValid) {
     throw new Error("Wallet authentication could not be verified by the backend.");
@@ -81,8 +98,8 @@ export async function connectWithWorldAppWallet() {
   }
 
   return {
-    walletAddress: verification.address || result.data.address,
-    signature: result.data.signature,
+    walletAddress: verification.address || finalPayload.address,
+    signature: finalPayload.signature,
     nonce,
     username: resolvedUser?.username || "",
     fullName: resolvedUser?.username || "World App user",
@@ -121,7 +138,7 @@ export async function requestWorldPayment({ amount, asset = "WLD", description, 
 
   const paymentReference = (await createPaymentReference()).reference;
 
-  const result = await MiniKit.pay({
+  const { finalPayload } = await runMiniKitCommand("pay", {
     reference: paymentReference,
     to: to.trim(),
     tokens: [
@@ -131,21 +148,21 @@ export async function requestWorldPayment({ amount, asset = "WLD", description, 
       },
     ],
     description,
-    fallback: () => undefined,
   });
 
-  if (result.executedWith === "fallback") {
-    throw new Error("This payment needs to be completed inside World App.");
-  }
+  const normalizedPayload = {
+    ...finalPayload,
+    transactionId: finalPayload.transactionId || finalPayload.transaction_id,
+  };
 
-  const confirmation = await confirmWorldPayment(result.data);
+  const confirmation = await confirmWorldPayment(normalizedPayload);
 
   return {
-    chain: result.data.chain,
-    from: result.data.from,
-    reference: result.data.reference,
-    timestamp: result.data.timestamp,
-    transactionId: result.data.transactionId,
+    chain: finalPayload.chain,
+    from: finalPayload.from,
+    reference: finalPayload.reference,
+    timestamp: finalPayload.timestamp,
+    transactionId: normalizedPayload.transactionId,
     verified: confirmation.verified,
     transactionStatus: confirmation.transactionStatus,
   };

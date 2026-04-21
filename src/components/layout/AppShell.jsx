@@ -10,8 +10,8 @@ import {
 
 const navItems = [
   { to: "/", label: "Dashboard" },
-  { to: "/sell", label: "Sell WLD" },
-  { to: "/buy", label: "Buy WLD" },
+  { to: "/sell", label: "Sell" },
+  { to: "/buy", label: "Buy" },
   { to: "/orders", label: "Orders" },
 ];
 

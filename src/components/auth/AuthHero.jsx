@@ -5,8 +5,8 @@ function AuthHero() {
       <div>
         <h1 className="brand-title">Exchange WLD and KES with a clean TMpesa flow.</h1>
         <p className="brand-copy">
-          TMpesa is a mobile-first exchange flow for WLD, USDT, KES, and M-Pesa. Sell-side WLD can
-          now stay inside the mini app, while buy orders remain simple and manually confirmed.
+          TMpesa is a mobile-first exchange flow for WLD, USDC, KES, and M-Pesa. Sell-side World
+          Pay can stay inside the mini app, while buy orders remain simple and manually confirmed.
         </p>
       </div>
 

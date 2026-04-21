@@ -29,7 +29,7 @@ function BuyPage() {
       <section className="panel stack">
         <span className="brand-kicker">Buy Flow</span>
         <div>
-          <h2>Buy WLD using M-Pesa</h2>
+          <h2>Buy WLD or USDC using M-Pesa</h2>
           <p className="muted">
             Place your order, send the payment manually through M-Pesa, then share the transaction
             code so the admin can confirm and send your crypto.
@@ -100,7 +100,7 @@ function BuyPage() {
               <code>Till Number: {settings.mpesaPaybillNumber}</code>
               <code>Business Name: {settings.mpesaTillName}</code>
               <code>Amount: KES {currentOrder.kesAmount.toLocaleString()}</code>
-              {currentOrder.destinationUsername ? <code>Send WLD to: @{currentOrder.destinationUsername}</code> : null}
+              {currentOrder.destinationUsername ? <code>Send {currentOrder.asset} to: @{currentOrder.destinationUsername}</code> : null}
               {currentOrder.walletAddress ? <code>Destination wallet: {currentOrder.walletAddress}</code> : null}
             </div>
 

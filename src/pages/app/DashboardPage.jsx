@@ -74,7 +74,7 @@ function DashboardPage() {
           <div className="stack">
             <span className="brand-kicker">Inside World App</span>
             <div>
-              <h2 className="brand-title">{APP_CONFIG.appName} for WLD, USDT and M-Pesa.</h2>
+              <h2 className="brand-title">{APP_CONFIG.appName} for WLD, USDC and M-Pesa.</h2>
               <p className="brand-copy">
                 Welcome {user?.fullName}. TMpesa keeps exchange flows lightweight inside the wallet,
                 while your admin still reviews every payout manually.
@@ -82,7 +82,7 @@ function DashboardPage() {
             </div>
             <div className="amount-line">
               <span>Current admin rates</span>
-              <strong>WLD: KES {exchangeRates.WLD} | USDT: KES {exchangeRates.USDT}</strong>
+              <strong>WLD: KES {exchangeRates.WLD} | USDC: KES {exchangeRates.USDC}</strong>
             </div>
             <div className="info-grid">
               <div className="info-box">
@@ -127,26 +127,26 @@ function DashboardPage() {
 
       <section className="action-grid">
         <article className="action-card stack">
-          <span className="tag">Sell WLD</span>
+          <span className="tag">Sell WLD/USDC</span>
           <h3>Crypto to cash</h3>
           <p className="muted">
-            In World App, WLD users can open the native payment sheet and send without leaving
+            In World App, users can open the native payment sheet and send without leaving
             TMpesa.
           </p>
           <Link to="/sell" className="button">
-            Sell WLD
+            Sell Crypto
           </Link>
         </article>
 
         <article className="action-card stack">
-          <span className="tag">Buy WLD</span>
+          <span className="tag">Buy WLD/USDC</span>
           <h3>Cash to crypto</h3>
           <p className="muted">
             The buy flow stays manual: confirm the KES amount, pay via M-Pesa, and submit your
             transaction code.
           </p>
           <Link to="/buy" className="button">
-            Buy WLD
+            Buy Crypto
           </Link>
         </article>
       </section>

@@ -4,16 +4,16 @@ export const APP_CONFIG = {
   defaultSettings: {
     ratesKes: {
       WLD: 120,
-      USDT: 128,
+      USDC: 128,
     },
     sellWalletAddress: "0x0f029f35a9da4043ff84b2c98a023d0a68eb64b4",
     mpesaPaybillNumber: "5698981",
     mpesaTillName: "TMpesa Exchange",
     supportEmail: "brianokindo2022@gmail.com",
-    worldAppId: "",
+    worldAppId: import.meta.env.VITE_WORLD_APP_ID || "",
   },
-  supportedAssets: ["WLD", "USDT"],
-  worldPaySupportedAssets: ["WLD"],
+  supportedAssets: ["WLD", "USDC"],
+  worldPaySupportedAssets: ["WLD", "USDC"],
 };
 
 export const STORAGE_KEYS = {

@@ -102,13 +102,13 @@ function AdminPage() {
           <div>
             <h3>Exchange Rate Control</h3>
             <p className="muted">
-              Update the current KES rates for WLD and USDT here. Buy and sell calculations will
+              Update the current KES rates for WLD and USDC here. Buy and sell calculations will
               use the selected asset rate immediately.
             </p>
           </div>
           <div className="stack">
             <div className="tag">WLD: KES {liveRates.WLD}</div>
-            <div className="tag">USDT: KES {liveRates.USDT}</div>
+            <div className="tag">USDC: KES {liveRates.USDC}</div>
           </div>
         </div>
 
@@ -132,15 +132,15 @@ function AdminPage() {
           </div>
 
           <div className="field">
-            <label htmlFor="rateUsdt">KES per USDT</label>
+            <label htmlFor="rateUsdc">KES per USDC</label>
             <input
-              id="rateUsdt"
+              id="rateUsdc"
               type="number"
               min="1"
               step="0.01"
-              value={rateInputs.USDT || ""}
+              value={rateInputs.USDC || ""}
               onChange={(event) =>
-                setRateInputs((current) => ({ ...current, USDT: event.target.value }))
+                setRateInputs((current) => ({ ...current, USDC: event.target.value }))
               }
               placeholder="128"
             />

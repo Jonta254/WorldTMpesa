@@ -1,6 +1,6 @@
 # WorldTMpesa
 
-This repository contains `TMpesa`, a React + Vite World mini app for manually exchanging crypto and Kenyan Shillings through M-Pesa. It now includes Vercel API functions for backend nonce generation, SIWE verification, and World payment verification, while user/order operations still remain in `localStorage` until a database is added.
+This repository contains `TMpesa`, a React + Vite World mini app for manually exchanging WLD/USDC and Kenyan Shillings through M-Pesa. It now includes Vercel API functions for backend nonce generation, SIWE verification, and World payment verification, while user/order operations still remain in `localStorage` until a database is added.
 
 ## Features
 

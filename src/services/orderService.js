@@ -5,6 +5,16 @@ import { readStorage, writeStorage } from "./localStorage";
 export function initializeOrders() {
   if (!localStorage.getItem(STORAGE_KEYS.orders)) {
     writeStorage(STORAGE_KEYS.orders, []);
+    return;
+  }
+
+  const orders = getAllOrders();
+  const migratedOrders = orders.map((order) =>
+    order.asset === "USDT" ? { ...order, asset: "USDC" } : order,
+  );
+
+  if (JSON.stringify(orders) !== JSON.stringify(migratedOrders)) {
+    writeStorage(STORAGE_KEYS.orders, migratedOrders);
   }
 }
 

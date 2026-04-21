@@ -35,7 +35,6 @@ function SellPage() {
   } = useOrderFlow("sell");
   const canSendInsideMiniApp =
     worldApp.isInstalled &&
-    asset === "WLD" &&
     canUseWorldPay(asset) &&
     Boolean(settings.sellWalletAddress?.trim());
 
@@ -81,7 +80,7 @@ function SellPage() {
         <div>
           <h2>Sell crypto for KES</h2>
           <p className="muted">
-            Sell requests stay simple: place the order, send WLD inside TMpesa when available, and
+            Sell requests stay simple: place the order, send WLD or USDC inside TMpesa when available, and
             let the admin confirm your payout to M-Pesa manually.
           </p>
           <p className="muted">Current admin rate: KES {exchangeRate} per {asset}.</p>
@@ -149,7 +148,7 @@ function SellPage() {
               <div className="highlight-box">
                 <strong>Send your {currentOrder.asset} to this wallet address</strong>
                 <p className="muted">
-                  Browser preview and non-WLD assets still use the manual confirmation flow.
+                  Browser preview still uses the manual confirmation flow.
                 </p>
                 <code>{settings.sellWalletAddress}</code>
               </div>
@@ -183,7 +182,7 @@ function SellPage() {
                     onClick={handleMiniAppSend}
                     disabled={sendLoading}
                   >
-                    {sendLoading ? "Opening World payment..." : "Send WLD in TMpesa"}
+                    {sendLoading ? "Opening World payment..." : `Send ${currentOrder.asset} in TMpesa`}
                   </button>
                 ) : (
                   <>
@@ -223,11 +222,11 @@ function SellPage() {
         <h3>Sell Instructions</h3>
         <ul className="list-reset">
           <li>1. Enter the amount of crypto you want to sell.</li>
-          <li>Use WLD or USDT depending on the asset selected.</li>
+          <li>Use WLD or USDC depending on the asset selected.</li>
           <li>2. Confirm the KES value at the current admin rate.</li>
           <li>3. After placing the order, follow the M-Pesa till direction shown on screen.</li>
-          <li>4. For WLD inside World App, tap send and complete the payment sheet in-app.</li>
-          <li>5. For browser preview or USDT, send manually and submit the transaction hash.</li>
+          <li>4. Inside World App, tap send and complete the payment sheet in-app.</li>
+          <li>5. In browser preview, send manually and submit the transaction hash.</li>
         </ul>
         <div className="button-row">
           <button
