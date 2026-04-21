@@ -1,5 +1,11 @@
 import { MiniKit } from "@worldcoin/minikit-js";
 import { APP_CONFIG } from "../config/appConfig";
+import {
+  completeSiweVerification,
+  confirmWorldPayment,
+  createPaymentReference,
+  requestServerNonce,
+} from "./backendService";
 import { getSettings } from "./settingsService";
 
 const TOKEN_DECIMALS = {
@@ -19,12 +25,6 @@ function toTokenUnits(amount, decimals) {
   const units = `${wholePart}${normalizedFraction}`.replace(/^0+(?=\d)/, "");
 
   return units || "0";
-}
-
-function createNonce(length = 16) {
-  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
-  const bytes = crypto.getRandomValues(new Uint8Array(length));
-  return Array.from(bytes, (byte) => alphabet[byte % alphabet.length]).join("");
 }
 
 export function getWorldAppContext() {
@@ -53,7 +53,7 @@ export async function connectWithWorldAppWallet() {
     throw new Error("Open this app inside World App to continue with wallet authentication.");
   }
 
-  const nonce = createNonce();
+  const { nonce } = await requestServerNonce();
   const result = await MiniKit.walletAuth({
     nonce,
     statement: "Sign in to TMpesa inside World App",
@@ -64,12 +64,28 @@ export async function connectWithWorldAppWallet() {
     throw new Error("Wallet authentication fell back to the browser flow.");
   }
 
+  const verification = await completeSiweVerification(result.data, nonce);
+
+  if (!verification.isValid) {
+    throw new Error("Wallet authentication could not be verified by the backend.");
+  }
+
+  let resolvedUser = MiniKit.user;
+
+  if (!resolvedUser?.username && verification.address) {
+    try {
+      resolvedUser = await MiniKit.getUserByAddress(verification.address);
+    } catch {
+      resolvedUser = MiniKit.user;
+    }
+  }
+
   return {
-    walletAddress: result.data.address,
+    walletAddress: verification.address || result.data.address,
     signature: result.data.signature,
     nonce,
-    username: MiniKit.user?.username || "",
-    fullName: MiniKit.user?.username || "World App user",
+    username: resolvedUser?.username || "",
+    fullName: resolvedUser?.username || "World App user",
     preferredCurrency: MiniKit.user?.preferredCurrency || "KES",
     worldAppVersion: MiniKit.deviceProperties?.worldAppVersion || null,
   };
@@ -90,7 +106,7 @@ export function buildWorldAppDeeplink(path = "/") {
   return `https://world.org/mini-app?app_id=${encodeURIComponent(appId)}&path=${encodeURIComponent(normalizedPath)}`;
 }
 
-export async function requestWorldPayment({ amount, asset = "WLD", description, reference, to }) {
+export async function requestWorldPayment({ amount, asset = "WLD", description, to }) {
   if (!MiniKit.isInstalled()) {
     throw new Error("Open TMpesa inside World App to send WLD without leaving the mini app.");
   }
@@ -103,8 +119,10 @@ export async function requestWorldPayment({ amount, asset = "WLD", description, 
     throw new Error("Set the sell wallet address in the admin dashboard before using in-app send.");
   }
 
+  const paymentReference = (await createPaymentReference()).reference;
+
   const result = await MiniKit.pay({
-    reference,
+    reference: paymentReference,
     to: to.trim(),
     tokens: [
       {
@@ -120,11 +138,15 @@ export async function requestWorldPayment({ amount, asset = "WLD", description, 
     throw new Error("This payment needs to be completed inside World App.");
   }
 
+  const confirmation = await confirmWorldPayment(result.data);
+
   return {
     chain: result.data.chain,
     from: result.data.from,
     reference: result.data.reference,
     timestamp: result.data.timestamp,
     transactionId: result.data.transactionId,
+    verified: confirmation.verified,
+    transactionStatus: confirmation.transactionStatus,
   };
 }

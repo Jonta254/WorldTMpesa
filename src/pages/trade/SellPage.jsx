@@ -52,14 +52,16 @@ function SellPage() {
         amount: currentOrder.cryptoAmount,
         asset: currentOrder.asset,
         description: `TMpesa sell order ${currentOrder.id}`,
-        reference: currentOrder.id,
         to: settings.sellWalletAddress,
       });
 
       const updated = updateOrder(currentOrder.id, {
         paymentMethod: "world-pay",
         paymentReference: payment.transactionId,
-        paymentSummary: `World Pay ref ${payment.reference}`,
+        paymentSummary: payment.verified
+          ? `World Pay verified (${payment.transactionStatus})`
+          : `World Pay submitted (${payment.transactionStatus})`,
+        paymentVerificationStatus: payment.transactionStatus,
         status: "paid",
       });
 

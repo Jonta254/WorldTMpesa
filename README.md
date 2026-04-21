@@ -1,6 +1,6 @@
 # WorldTMpesa
 
-This repository contains `TMpesa`, a React + Vite World mini app for manually exchanging crypto and Kenyan Shillings through M-Pesa. It is frontend-only for now and stores users and orders in `localStorage`.
+This repository contains `TMpesa`, a React + Vite World mini app for manually exchanging crypto and Kenyan Shillings through M-Pesa. It now includes Vercel API functions for backend nonce generation, SIWE verification, and World payment verification, while user/order operations still remain in `localStorage` until a database is added.
 
 ## Features
 
@@ -13,6 +13,7 @@ This repository contains `TMpesa`, a React + Vite World mini app for manually ex
 - Admin simulation page for manual confirmation
 - Admin-editable rates, receiver wallet, M-Pesa details, and support email
 - Gmail support and payment-delay actions for users
+- Vercel API backend for nonce generation, SIWE verification, and World payment confirmation
 
 ## Product Context
 
@@ -21,14 +22,15 @@ This repository contains `TMpesa`, a React + Vite World mini app for manually ex
 - Uses World App wallet auth as the preferred entry path, with local login only as a fallback for development
 - Uses World `Pay` for the WLD sell flow inside the mini app when opened in World App
 - Includes repo assets in `public/` for favicon, icon, manifest, and content-card placeholder
-- Current version is still frontend-only and does not yet verify SIWE or payment status on a backend
+- World wallet auth now uses a backend nonce and server-side SIWE verification
+- WLD sell payments now call a backend confirmation endpoint before the app records the send
+- User and order persistence still uses localStorage until a database is added
 
 ## Important Prototype Note
 
-- The current wallet auth flow is a frontend prototype only
-- Before submission or production use, add backend SIWE nonce generation and signature verification
-- Before production payouts, verify `Pay` transactions on a backend and whitelist the receiver wallet in the World Developer Portal
-- World's docs recommend Wallet Auth as the primary login flow for mini apps and backend verification for the returned payloads
+- Before production payouts, whitelist the receiver wallet in the World Developer Portal
+- Before multi-device admin usage, move users/orders/settings from localStorage into a real database
+- World recommends Wallet Auth as the primary login flow for mini apps and backend verification for the returned payloads, which this project now implements through Vercel API routes
 
 ## Review-Safe Naming
 
@@ -52,7 +54,23 @@ This repository contains `TMpesa`, a React + Vite World mini app for manually ex
 
 - Users are stored locally in the browser
 - Orders are stored locally in the browser
-- No backend or external API is used yet
+- Rates and app settings are stored locally in the browser
+- World auth and payment verification are now handled by backend API routes under `api/`
+
+## Backend Routes
+
+- `GET /api/nonce`: create a backend nonce for SIWE
+- `POST /api/complete-siwe`: verify the World wallet auth payload on the server
+- `POST /api/payment-reference`: issue a backend payment reference before WLD send
+- `POST /api/confirm-payment`: confirm a World payment with the Developer Portal API
+- `GET /api/health`: quick backend health/config check
+
+## Environment Variables
+
+Create env vars from [.env.example](C:/Users/ADMIN/Documents/Codex/2026-04-19-i-need-to-star-a-new/.env.example):
+
+- `APP_ID`: your World mini app id, used for payment verification
+- `DEV_PORTAL_API_KEY`: World Developer Portal API key, used to confirm World payments
 
 ## Demo Admin Account
 
@@ -62,8 +80,8 @@ This repository contains `TMpesa`, a React + Vite World mini app for manually ex
 ## Run Locally
 
 1. Install dependencies with `npm install`
-2. Start the app with `npm run dev`
-3. Open the Vite local URL in your browser
+2. For frontend-only preview, start the app with `npm run dev`
+3. For full backend testing, run through Vercel so `/api/*` routes are available
 4. Open the deployed URL inside World App when you want to test MiniKit behavior
 
 ## GitHub Ready

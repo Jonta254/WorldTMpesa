@@ -30,6 +30,7 @@ function OrderCard({ order, children }) {
         {order.walletAddress ? <span>Destination: {order.walletAddress}</span> : null}
         {order.paymentMethod ? <span>Method: {order.paymentMethod}</span> : null}
         {order.paymentSummary ? <span>Payment Note: {order.paymentSummary}</span> : null}
+        {order.paymentVerificationStatus ? <span>Verification: {order.paymentVerificationStatus}</span> : null}
         {order.paymentReference ? <span>Reference: {order.paymentReference}</span> : null}
         <span>Created: {formatDate(order.createdAt)}</span>
       </div>
