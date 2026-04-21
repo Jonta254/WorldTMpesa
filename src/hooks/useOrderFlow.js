@@ -33,8 +33,8 @@ export function useOrderFlow(type, initialAsset = "WLD") {
       return null;
     }
 
-    if (type === "buy" && !walletAddress.trim()) {
-      setError("Enter the wallet address that should receive the crypto.");
+    if (type === "buy" && !walletAddress.trim() && !currentUser?.username) {
+      setError("Open with World App or enter the wallet address that should receive the crypto.");
       return null;
     }
 

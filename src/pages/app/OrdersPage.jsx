@@ -1,10 +1,30 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import OrderCard from "../../components/orders/OrderCard";
-import { getCurrentUser, getOrdersForCurrentUser, openOrderSupportEmail } from "../../services";
+import { getCurrentUser, getOrdersForCurrentUser, openOrderSupportEmail, updateOrder } from "../../services";
 
 function OrdersPage() {
-  const orders = getOrdersForCurrentUser();
+  const [orders, setOrders] = useState(getOrdersForCurrentUser());
+  const [paymentCodes, setPaymentCodes] = useState({});
+  const [message, setMessage] = useState("");
   const user = getCurrentUser();
+
+  const handlePaymentCodeChange = (orderId, value) => {
+    setPaymentCodes((current) => ({ ...current, [orderId]: value }));
+  };
+
+  const handleMarkBuyPaid = (orderId) => {
+    const code = (paymentCodes[orderId] || "").trim().toUpperCase();
+
+    if (!code) {
+      setMessage("Enter the M-Pesa code before marking the buy order as paid.");
+      return;
+    }
+
+    updateOrder(orderId, { paymentReference: code, status: "paid" });
+    setOrders(getOrdersForCurrentUser());
+    setMessage("Payment code submitted. Admin will confirm and send your crypto.");
+  };
 
   return (
     <div className="stack">
@@ -20,12 +40,33 @@ function OrdersPage() {
           </div>
           {user?.isAdmin ? <Link to="/admin" className="button-secondary">Open Admin</Link> : null}
         </div>
+        {message ? <div className="notice">{message}</div> : null}
       </section>
 
       {orders.length ? (
         <section className="order-grid">
           {orders.map((order) => (
             <OrderCard key={order.id} order={order}>
+              {order.type === "buy" && order.status === "pending" ? (
+                <div className="inline-payment-form">
+                  <div className="field">
+                    <label htmlFor={`mpesa-${order.id}`}>M-Pesa transaction code</label>
+                    <input
+                      id={`mpesa-${order.id}`}
+                      value={paymentCodes[order.id] || ""}
+                      onChange={(event) => handlePaymentCodeChange(order.id, event.target.value)}
+                      placeholder="QWE123XYZ"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    className="button"
+                    onClick={() => handleMarkBuyPaid(order.id)}
+                  >
+                    I Have Paid
+                  </button>
+                </div>
+              ) : null}
               <div className="button-row">
                 <button
                   type="button"

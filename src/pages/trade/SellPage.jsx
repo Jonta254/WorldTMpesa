@@ -76,14 +76,15 @@ function SellPage() {
   return (
     <div className="content-grid">
       <section className="panel stack">
-        <span className="brand-kicker">Sell Flow</span>
+        <span className="brand-kicker">Sell WLD/USDC</span>
         <div>
-          <h2>Sell crypto for KES</h2>
+          <h2>Send from World App, receive KES on M-Pesa</h2>
           <p className="muted">
-            Sell requests stay simple: place the order, send WLD or USDC inside TMpesa when available, and
-            let the admin confirm your payout to M-Pesa manually.
+            Enter the amount you want to sell, confirm your payout phone, then send directly from
+            your World wallet to the TMpesa receiver. The admin sees your paid order and sends KES
+            to your saved M-Pesa number.
           </p>
-          <p className="muted">Current admin rate: KES {exchangeRate} per {asset}.</p>
+          <p className="muted">Rate shown now: KES {exchangeRate} per {asset}. Fees are excluded.</p>
         </div>
 
         {error ? <div className="error">{error}</div> : null}
@@ -120,6 +121,9 @@ function SellPage() {
                 onChange={(event) => setPayoutPhoneNumber(event.target.value)}
                 placeholder="0712345678"
               />
+              <span className="muted field-hint">
+                This is where the admin will send KES after your World payment is confirmed.
+              </span>
             </div>
 
             <div className="amount-line">
@@ -128,7 +132,7 @@ function SellPage() {
             </div>
 
             <button type="button" className="button" onClick={placeOrder}>
-              Place Order
+              Create Sell Order
             </button>
           </div>
         ) : null}
@@ -136,40 +140,32 @@ function SellPage() {
         {step >= 2 && currentOrder ? (
           <div className="stack">
             {canSendInsideMiniApp ? (
-              <div className="highlight-box">
-                <strong>Send {currentOrder.asset} without leaving TMpesa</strong>
+              <div className="highlight-box action-highlight">
+                <strong>Step 2: Pay with World App</strong>
                 <p className="muted">
-                  Tap the button below and World App will open the payment sheet using your wallet
-                  balance. After a successful send, your order is marked as paid automatically.
+                  Tap send and approve the World Pay sheet. The payment goes to the TMpesa
+                  Worldchain receiver below and your order moves to admin payout automatically.
                 </p>
-                <code>{settings.sellWalletAddress}</code>
+                <code>Receiver: {settings.sellWalletAddress}</code>
               </div>
             ) : (
               <div className="highlight-box">
-                <strong>Send your {currentOrder.asset} to this wallet address</strong>
+                <strong>Browser preview fallback</strong>
                 <p className="muted">
-                  Browser preview still uses the manual confirmation flow.
+                  World Pay only opens inside World App. For browser testing, send manually and
+                  paste the blockchain transaction hash.
                 </p>
-                <code>{settings.sellWalletAddress}</code>
+                <code>Receiver: {settings.sellWalletAddress}</code>
               </div>
             )}
 
             <div className="amount-line">
-              <span>Order value</span>
+              <span>KES payout</span>
               <strong>KES {currentOrder.kesAmount.toLocaleString()}</strong>
             </div>
-            <div className="info-box">
-              <strong>M-Pesa till payment direction</strong>
-              <p className="muted">
-                After placing this sell order, use this till number if you need to make an M-Pesa
-                payment for the order.
-              </p>
-              <code>Till Number: {settings.mpesaPaybillNumber}</code>
-              <code>Business Name: {settings.mpesaTillName}</code>
-              <code>Amount: KES {currentOrder.kesAmount.toLocaleString()}</code>
-            </div>
-            <div className="info-box">
-              <strong>M-Pesa payout destination</strong>
+            <div className="info-box receipt-card">
+              <strong>Your payout destination</strong>
+              <span>M-Pesa phone number admin will pay</span>
               <code>{currentOrder.payoutPhoneNumber}</code>
             </div>
 
@@ -182,7 +178,7 @@ function SellPage() {
                     onClick={handleMiniAppSend}
                     disabled={sendLoading}
                   >
-                    {sendLoading ? "Opening World payment..." : `Send ${currentOrder.asset} in TMpesa`}
+                    {sendLoading ? "Opening World payment..." : `Send ${currentOrder.asset} with World Pay`}
                   </button>
                 ) : (
                   <>
@@ -209,9 +205,12 @@ function SellPage() {
             ) : null}
 
             {step === 3 ? (
-              <div className="notice">
-                Order marked as <strong>paid</strong>. The admin will confirm your transfer and mark
-                it as completed once the payout is verified.
+              <div className="success-panel">
+                <strong>Payment received for review</strong>
+                <p>
+                  Your sell order is marked as paid. The admin will confirm the World payment and
+                  send KES to <strong>{currentOrder.payoutPhoneNumber}</strong>.
+                </p>
               </div>
             ) : null}
           </div>
@@ -219,16 +218,16 @@ function SellPage() {
       </section>
 
       <aside className="summary-card stack">
-        <h3>Sell Instructions</h3>
-        <ul className="list-reset">
-          <li>1. Enter the amount of crypto you want to sell.</li>
-          <li>Use WLD or USDC depending on the asset selected.</li>
-          <li>2. Confirm the KES value at the current admin rate.</li>
-          <li>3. After placing the order, follow the M-Pesa till direction shown on screen.</li>
-          <li>4. Inside World App, tap send and complete the payment sheet in-app.</li>
-          <li>5. In browser preview, send manually and submit the transaction hash.</li>
-        </ul>
-        <div className="button-row">
+        <h3>Sell Flow</h3>
+        <div className="flow-list">
+          <div><span>1</span><p>Choose WLD/USDC and enter the amount.</p></div>
+          <div><span>2</span><p>Confirm your M-Pesa payout number.</p></div>
+          <div><span>3</span><p>Approve World Pay inside World App.</p></div>
+          <div><span>4</span><p>Admin pays KES to your saved phone number.</p></div>
+        </div>
+        <div className="support-card">
+          <strong>Need help?</strong>
+          <p className="muted">Open Gmail support for sell questions or delayed payout help.</p>
           <button
             type="button"
             className="button-secondary"

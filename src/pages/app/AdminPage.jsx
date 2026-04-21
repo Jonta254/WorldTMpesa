@@ -91,8 +91,8 @@ function AdminPage() {
         <div>
           <h2>Manual confirmation panel</h2>
           <p className="muted">
-            This page simulates admin review with localStorage only. Use it to advance order
-            statuses from pending to paid or completed while the backend is still pending.
+            Review sell orders after World Pay and buy orders after M-Pesa payment. Complete orders
+            only after you have sent KES or crypto manually.
           </p>
         </div>
       </section>
@@ -156,8 +156,8 @@ function AdminPage() {
         <div>
           <h3>Mini App Operations</h3>
           <p className="muted">
-            Set the live wallet receiver for sell-side WLD, the M-Pesa paybill details for buy
-            orders, and the Gmail support destination for user help actions.
+            Set the live wallet receiver for sell-side payments, the M-Pesa till for buy orders,
+            and the Gmail support destination for user help actions.
           </p>
         </div>
 
@@ -185,7 +185,7 @@ function AdminPage() {
 
           <div className="info-grid">
             <div className="field">
-              <label htmlFor="mpesaPaybillNumber">M-Pesa Paybill / Till</label>
+              <label htmlFor="mpesaPaybillNumber">M-Pesa Till</label>
               <input
                 id="mpesaPaybillNumber"
                 value={operationalInputs.mpesaPaybillNumber}
@@ -199,7 +199,7 @@ function AdminPage() {
               />
             </div>
 
-            <div className="field">
+            <div className="field admin-hidden-field">
               <label htmlFor="mpesaTillName">Business Name</label>
               <input
                 id="mpesaTillName"
@@ -261,8 +261,8 @@ function AdminPage() {
             <span className="brand-kicker">Payout Queue</span>
             <h3>Sell orders ready for M-Pesa payout</h3>
             <p className="muted">
-              These users have already sent WLD. Use the name and M-Pesa number below when sending
-              their KES payout.
+              These users have already sent crypto. Use the name and M-Pesa number below when
+              sending their KES payout.
             </p>
           </div>
           <div className="stack">

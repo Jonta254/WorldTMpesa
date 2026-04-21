@@ -7,6 +7,7 @@ import {
   getCurrentUser,
   getOrdersForCurrentUser,
   getWorldAppContext,
+  openSupportEmail,
   updateCurrentUserProfile,
 } from "../../services";
 import { useExchangeRates } from "../../hooks/useExchangeRate";
@@ -48,8 +49,8 @@ function DashboardPage() {
           <div>
             <h3>Add your M-Pesa payout number</h3>
             <p className="muted">
-              TMpesa uses this phone number when you sell WLD so the admin knows exactly where to
-              send your KES payout.
+              TMpesa saves this number for sell orders. When you sell WLD or USDC, the admin uses
+              it to send your KES payout after confirming your World payment.
             </p>
           </div>
           {profileError ? <div className="error">{profileError}</div> : null}
@@ -74,19 +75,19 @@ function DashboardPage() {
           <div className="stack">
             <span className="brand-kicker">Inside World App</span>
             <div>
-              <h2 className="brand-title">{APP_CONFIG.appName} for WLD, USDC and M-Pesa.</h2>
+              <h2 className="brand-title">{APP_CONFIG.appName} exchange desk.</h2>
               <p className="brand-copy">
-                Welcome {user?.fullName}. TMpesa keeps exchange flows lightweight inside the wallet,
-                while your admin still reviews every payout manually.
+                Welcome {user?.fullName}. Start by keeping your M-Pesa payout number updated, then
+                choose whether you want to sell crypto for KES or buy crypto with M-Pesa.
               </p>
             </div>
             <div className="amount-line">
-              <span>Current admin rates</span>
+              <span>Current rates</span>
               <strong>WLD: KES {exchangeRates.WLD} | USDC: KES {exchangeRates.USDC}</strong>
             </div>
             <div className="info-grid">
               <div className="info-box">
-                <strong>Sell Receiver</strong>
+                <strong>Sell receiver wallet</strong>
                 <code>{settings.sellWalletAddress}</code>
               </div>
               <div className="info-box">
@@ -128,10 +129,9 @@ function DashboardPage() {
       <section className="action-grid">
         <article className="action-card stack">
           <span className="tag">Sell WLD/USDC</span>
-          <h3>Crypto to cash</h3>
+          <h3>Send crypto, receive KES</h3>
           <p className="muted">
-            In World App, users can open the native payment sheet and send without leaving
-            TMpesa.
+            World Pay sends your asset to TMpesa. Admin then pays KES to your saved M-Pesa number.
           </p>
           <Link to="/sell" className="button">
             Sell Crypto
@@ -140,15 +140,33 @@ function DashboardPage() {
 
         <article className="action-card stack">
           <span className="tag">Buy WLD/USDC</span>
-          <h3>Cash to crypto</h3>
+          <h3>Pay M-Pesa, receive crypto</h3>
           <p className="muted">
-            The buy flow stays manual: confirm the KES amount, pay via M-Pesa, and submit your
-            transaction code.
+            TMpesa records your World username or wallet, then shows the till and amount to pay.
           </p>
           <Link to="/buy" className="button">
             Buy Crypto
           </Link>
         </article>
+      </section>
+
+      <section className="support-footer">
+        <div>
+          <strong>Support</strong>
+          <p>Questions or delayed payment? Contact TMpesa support by email.</p>
+        </div>
+        <button
+          type="button"
+          className="button-secondary"
+          onClick={() =>
+            openSupportEmail({
+              subject: "TMpesa support",
+              body: "Hello TMpesa team,\n\nI need help with my account or order.",
+            })
+          }
+        >
+          Email Support
+        </button>
       </section>
     </div>
   );

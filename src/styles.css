@@ -469,6 +469,126 @@ button:disabled {
   border: 1px solid rgba(148, 163, 184, 0.12);
 }
 
+.action-highlight {
+  border-color: rgba(79, 124, 255, 0.28);
+  background: linear-gradient(145deg, rgba(79, 124, 255, 0.16), rgba(15, 23, 42, 0.78));
+}
+
+.receipt-card span {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+}
+
+.payment-card {
+  display: grid;
+  gap: 6px;
+  padding: 22px;
+  border-radius: 24px;
+  background:
+    linear-gradient(135deg, rgba(79, 124, 255, 0.22), rgba(54, 211, 153, 0.1)),
+    rgba(15, 23, 42, 0.82);
+  border: 1px solid rgba(79, 124, 255, 0.3);
+}
+
+.payment-card span {
+  color: #c9d7ff;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.78rem;
+}
+
+.payment-card strong {
+  color: #ffffff;
+  font-size: clamp(2rem, 9vw, 3.2rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.payment-card p {
+  margin: 0;
+  color: #dbe5ff;
+  font-weight: 700;
+}
+
+.success-panel {
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(54, 211, 153, 0.12);
+  border: 1px solid rgba(54, 211, 153, 0.22);
+  color: #ddfff0;
+}
+
+.success-panel p {
+  margin: 8px 0 0;
+  color: #c9f7e3;
+}
+
+.flow-list {
+  display: grid;
+  gap: 12px;
+}
+
+.flow-list div {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.flow-list span {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--primary-soft);
+  color: #dbe5ff;
+  font-weight: 800;
+}
+
+.flow-list p {
+  margin: 2px 0 0;
+  color: #dfe7fc;
+}
+
+.support-card,
+.support-footer,
+.inline-payment-form {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(148, 163, 184, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.support-card p,
+.support-footer p {
+  margin: 4px 0 0;
+}
+
+.support-footer {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 520px) {
+  .support-footer {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+
+  .inline-payment-form {
+    grid-template-columns: 1fr auto;
+    align-items: end;
+  }
+}
+
+.sr-only,
+.admin-hidden-field {
+  display: none;
+}
+
 .highlight-box code,
 .info-box code {
   display: block;

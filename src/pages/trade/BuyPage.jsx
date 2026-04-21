@@ -27,14 +27,14 @@ function BuyPage() {
   return (
     <div className="content-grid">
       <section className="panel stack">
-        <span className="brand-kicker">Buy Flow</span>
+        <span className="brand-kicker">Buy WLD/USDC</span>
         <div>
-          <h2>Buy WLD or USDC using M-Pesa</h2>
+          <h2>Pay with M-Pesa, receive crypto to your World account</h2>
           <p className="muted">
-            Place your order, send the payment manually through M-Pesa, then share the transaction
-            code so the admin can confirm and send your crypto.
+            TMpesa records your World username or wallet destination when you place the order. Pay
+            the shown KES amount to the till, then submit your M-Pesa code for admin confirmation.
           </p>
-          <p className="muted">Current admin rate: KES {exchangeRate} per {asset}.</p>
+          <p className="muted">Rate shown now: KES {exchangeRate} per {asset}. Fees are excluded.</p>
         </div>
 
         {error ? <div className="error">{error}</div> : null}
@@ -42,8 +42,9 @@ function BuyPage() {
         {step === 1 ? (
           <div className="stack">
             {currentUser?.walletAddress || currentUser?.username ? (
-              <div className="info-box">
-                <strong>Detected World destination</strong>
+              <div className="info-box receipt-card">
+                <strong>World destination detected</strong>
+                <span>Admin will use this to send your crypto after M-Pesa confirmation.</span>
                 {currentUser?.username ? <code>Username: @{currentUser.username}</code> : null}
                 {currentUser?.walletAddress ? <code>Wallet: {currentUser.walletAddress}</code> : null}
               </div>
@@ -72,15 +73,20 @@ function BuyPage() {
               />
             </div>
 
-            <div className="field">
-              <label htmlFor="walletAddress">Wallet Address</label>
-              <input
-                id="walletAddress"
-                value={walletAddress}
-                onChange={(event) => setWalletAddress(event.target.value)}
-                placeholder={currentUser?.walletAddress || "0xYourWalletAddress"}
-              />
-            </div>
+            {!currentUser?.walletAddress && !currentUser?.username ? (
+              <div className="field">
+                <label htmlFor="walletAddress">Destination wallet address</label>
+                <input
+                  id="walletAddress"
+                  value={walletAddress}
+                  onChange={(event) => setWalletAddress(event.target.value)}
+                  placeholder="0xYourWalletAddress"
+                />
+                <span className="muted field-hint">
+                  Open with World App to detect this automatically.
+                </span>
+              </div>
+            ) : null}
 
             <div className="amount-line">
               <span>Amount to pay</span>
@@ -88,20 +94,34 @@ function BuyPage() {
             </div>
 
             <button type="button" className="button" onClick={placeOrder}>
-              Place Order
+              Create Buy Order
             </button>
           </div>
         ) : null}
 
         {step >= 2 && currentOrder ? (
           <div className="stack">
-            <div className="info-box">
-              <strong>M-Pesa payment instructions</strong>
+            <div className="payment-card">
+              <span>Pay to till</span>
+              <strong>{settings.mpesaPaybillNumber}</strong>
+              <p>KES {currentOrder.kesAmount.toLocaleString()}</p>
+            </div>
+
+            <div className="info-box receipt-card">
+              <strong>Crypto delivery destination</strong>
+              <span>Admin will send after your M-Pesa code is confirmed.</span>
+              {currentOrder.destinationUsername ? <code>@{currentOrder.destinationUsername}</code> : null}
+              {currentOrder.walletAddress ? <code>{currentOrder.walletAddress}</code> : null}
+            </div>
+
+            <div className="notice">
+              Copy the till number, leave World App to pay in M-Pesa, then return and submit your
+              M-Pesa transaction code here or from the Orders page.
+            </div>
+
+            <div className="sr-only">
               <code>Till Number: {settings.mpesaPaybillNumber}</code>
-              <code>Business Name: {settings.mpesaTillName}</code>
               <code>Amount: KES {currentOrder.kesAmount.toLocaleString()}</code>
-              {currentOrder.destinationUsername ? <code>Send {currentOrder.asset} to: @{currentOrder.destinationUsername}</code> : null}
-              {currentOrder.walletAddress ? <code>Destination wallet: {currentOrder.walletAddress}</code> : null}
             </div>
 
             {step === 2 ? (
@@ -123,9 +143,12 @@ function BuyPage() {
             ) : null}
 
             {step === 3 ? (
-              <div className="notice">
-                Order marked as <strong>paid</strong>. The admin will verify your M-Pesa payment and
-                send the crypto to your wallet after confirmation.
+              <div className="success-panel">
+                <strong>M-Pesa payment submitted</strong>
+                <p>
+                  The admin will verify your code and send {currentOrder.asset} to your recorded
+                  World destination.
+                </p>
               </div>
             ) : null}
           </div>
@@ -133,14 +156,16 @@ function BuyPage() {
       </section>
 
       <aside className="summary-card stack">
-        <h3>Buy Instructions</h3>
-        <ul className="list-reset">
-          <li>1. Choose the asset and amount you want to buy.</li>
-          <li>2. Provide the destination wallet address.</li>
-          <li>3. Pay the shown KES amount via M-Pesa.</li>
-          <li>4. Submit the transaction code to mark the order as paid.</li>
-        </ul>
-        <div className="button-row">
+        <h3>Buy Flow</h3>
+        <div className="flow-list">
+          <div><span>1</span><p>Choose WLD/USDC and enter the amount.</p></div>
+          <div><span>2</span><p>TMpesa records your World username or wallet.</p></div>
+          <div><span>3</span><p>Pay the KES amount to till {settings.mpesaPaybillNumber}.</p></div>
+          <div><span>4</span><p>Submit your M-Pesa code for admin delivery.</p></div>
+        </div>
+        <div className="support-card">
+          <strong>Need help?</strong>
+          <p className="muted">Open Gmail support for buy questions or delayed crypto delivery.</p>
           <button
             type="button"
             className="button-secondary"

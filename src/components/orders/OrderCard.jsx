@@ -7,6 +7,7 @@ function formatDate(dateValue) {
 
 function OrderCard({ order, children }) {
   const user = getCurrentUser();
+  const isSell = order.type === "sell";
 
   return (
     <article className="order-card stack">
@@ -21,15 +22,15 @@ function OrderCard({ order, children }) {
       </div>
 
       <div className="order-meta">
-        <span>KES Value: KES {order.kesAmount.toLocaleString()}</span>
+        <span>{isSell ? "KES payout" : "KES to pay"}: KES {order.kesAmount.toLocaleString()}</span>
         {order.userLabel ? <span>User: {order.userLabel}</span> : null}
-        {order.userPhone ? <span>User Phone: {order.userPhone}</span> : null}
-        {order.payoutPhoneNumber ? <span>M-Pesa Payout: {order.payoutPhoneNumber}</span> : null}
-        {user?.isAdmin && order.userWalletAddress ? <span>Wallet: {order.userWalletAddress}</span> : null}
-        {order.destinationUsername ? <span>Destination Username: @{order.destinationUsername}</span> : null}
-        {order.walletAddress ? <span>Destination: {order.walletAddress}</span> : null}
+        {order.userPhone ? <span>Login phone: {order.userPhone}</span> : null}
+        {order.payoutPhoneNumber ? <span>M-Pesa payout: {order.payoutPhoneNumber}</span> : null}
+        {user?.isAdmin && order.userWalletAddress ? <span>User wallet: {order.userWalletAddress}</span> : null}
+        {order.destinationUsername ? <span>World username: @{order.destinationUsername}</span> : null}
+        {order.walletAddress ? <span>Delivery wallet: {order.walletAddress}</span> : null}
         {order.paymentMethod ? <span>Method: {order.paymentMethod}</span> : null}
-        {order.paymentSummary ? <span>Payment Note: {order.paymentSummary}</span> : null}
+        {order.paymentSummary ? <span>Payment note: {order.paymentSummary}</span> : null}
         {order.paymentVerificationStatus ? <span>Verification: {order.paymentVerificationStatus}</span> : null}
         {order.paymentReference ? <span>Reference: {order.paymentReference}</span> : null}
         <span>Created: {formatDate(order.createdAt)}</span>
