@@ -1,50 +1,58 @@
 import { APP_CONFIG, STORAGE_KEYS } from "../config/appConfig";
 import { readStorage, writeStorage } from "./localStorage";
 
-const RATE_UPDATED_EVENT = "worldtmpesa:rate-updated";
+const SETTINGS_UPDATED_EVENT = "worldtmpesa:settings-updated";
 
-function emitRateUpdate(nextRate) {
-  window.dispatchEvent(new CustomEvent(RATE_UPDATED_EVENT, { detail: nextRate }));
+function getDefaultSettings() {
+  return {
+    ...APP_CONFIG.defaultSettings,
+    ratesKes: { ...APP_CONFIG.defaultSettings.ratesKes },
+  };
+}
+
+function mergeSettings(settings = {}) {
+  return {
+    ...getDefaultSettings(),
+    ...settings,
+    ratesKes: {
+      ...APP_CONFIG.defaultSettings.ratesKes,
+      ...(settings.ratesKes || {}),
+    },
+  };
+}
+
+function emitSettingsUpdate(nextSettings) {
+  window.dispatchEvent(new CustomEvent(SETTINGS_UPDATED_EVENT, { detail: nextSettings }));
 }
 
 export function initializeSettings() {
   const settings = readStorage(STORAGE_KEYS.settings, null);
+  const defaults = getDefaultSettings();
 
-  if (!settings || !settings.ratesKes) {
-    writeStorage(STORAGE_KEYS.settings, {
-      ratesKes: APP_CONFIG.defaultRatesKes,
-    });
+  if (!settings) {
+    writeStorage(STORAGE_KEYS.settings, defaults);
     return;
   }
 
-  if (typeof settings.rateKesPerWld === "number" && !settings.ratesKes.WLD) {
-    writeStorage(STORAGE_KEYS.settings, {
-      ratesKes: {
-        ...APP_CONFIG.defaultRatesKes,
-        WLD: settings.rateKesPerWld,
-      },
-      updatedAt: settings.updatedAt || new Date().toISOString(),
-    });
+  const nextSettings = mergeSettings(settings);
+
+  if (typeof settings.rateKesPerWld === "number" && !settings.ratesKes?.WLD) {
+    nextSettings.ratesKes.WLD = settings.rateKesPerWld;
   }
+
+  writeStorage(STORAGE_KEYS.settings, nextSettings);
 }
 
 export function getSettings() {
-  return readStorage(STORAGE_KEYS.settings, {
-    ratesKes: APP_CONFIG.defaultRatesKes,
-  });
+  return mergeSettings(readStorage(STORAGE_KEYS.settings, {}));
 }
 
 export function getExchangeRates() {
-  const settings = getSettings();
-
-  return {
-    ...APP_CONFIG.defaultRatesKes,
-    ...(settings.ratesKes || {}),
-  };
+  return getSettings().ratesKes;
 }
 
 export function getExchangeRate(asset = "WLD") {
-  return getExchangeRates()[asset] || APP_CONFIG.defaultRatesKes[asset] || 0;
+  return getExchangeRates()[asset] || APP_CONFIG.defaultSettings.ratesKes[asset] || 0;
 }
 
 export function updateExchangeRates(nextRates) {
@@ -64,7 +72,7 @@ export function updateExchangeRates(nextRates) {
   const settings = {
     ...previousSettings,
     ratesKes: {
-      ...APP_CONFIG.defaultRatesKes,
+      ...APP_CONFIG.defaultSettings.ratesKes,
       ...(previousSettings.ratesKes || {}),
       ...parsedRates,
     },
@@ -72,20 +80,65 @@ export function updateExchangeRates(nextRates) {
   };
 
   writeStorage(STORAGE_KEYS.settings, settings);
-  emitRateUpdate(settings.ratesKes);
+  emitSettingsUpdate(settings);
   return settings.ratesKes;
 }
 
-export function subscribeToRateUpdates(callback) {
-  const handleRateUpdate = (event) => {
+export function updateOperationalSettings(nextSettings) {
+  const previousSettings = getSettings();
+  const sellWalletAddress = (nextSettings.sellWalletAddress || "").trim();
+  const mpesaPaybillNumber = (nextSettings.mpesaPaybillNumber || "").trim();
+  const mpesaTillName = (nextSettings.mpesaTillName || "").trim();
+  const supportEmail = (nextSettings.supportEmail || "").trim();
+
+  if (!sellWalletAddress) {
+    throw new Error("Enter the wallet address that should receive sell-side WLD payments.");
+  }
+
+  if (!mpesaPaybillNumber) {
+    throw new Error("Enter the M-Pesa paybill or till number.");
+  }
+
+  if (!mpesaTillName) {
+    throw new Error("Enter the M-Pesa business name.");
+  }
+
+  if (!supportEmail || !supportEmail.includes("@")) {
+    throw new Error("Enter a valid support email address.");
+  }
+
+  const settings = {
+    ...previousSettings,
+    sellWalletAddress,
+    mpesaPaybillNumber,
+    mpesaTillName,
+    supportEmail,
+    updatedAt: new Date().toISOString(),
+  };
+
+  writeStorage(STORAGE_KEYS.settings, settings);
+  emitSettingsUpdate(settings);
+  return settings;
+}
+
+export function subscribeToSettings(callback) {
+  const handleSettingsUpdate = (event) => {
     callback(event.detail);
   };
 
-  window.addEventListener(RATE_UPDATED_EVENT, handleRateUpdate);
-  window.addEventListener("storage", callback);
+  const handleStorage = () => {
+    callback(getSettings());
+  };
+
+  window.addEventListener(SETTINGS_UPDATED_EVENT, handleSettingsUpdate);
+  window.addEventListener("storage", handleStorage);
 
   return () => {
-    window.removeEventListener(RATE_UPDATED_EVENT, handleRateUpdate);
-    window.removeEventListener("storage", callback);
+    window.removeEventListener(SETTINGS_UPDATED_EVENT, handleSettingsUpdate);
+    window.removeEventListener("storage", handleStorage);
   };
+}
+
+export function subscribeToRateUpdates(callback) {
+  return subscribeToSettings((settings) => callback(settings.ratesKes));
 }

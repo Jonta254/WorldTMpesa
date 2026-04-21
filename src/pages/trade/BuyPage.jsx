@@ -1,7 +1,9 @@
-import { APP_CONFIG } from "../../config/appConfig";
+import { useAppSettings } from "../../hooks/useAppSettings";
 import { useOrderFlow } from "../../hooks/useOrderFlow";
+import { openSupportEmail } from "../../services";
 
 function BuyPage() {
+  const settings = useAppSettings();
   const {
     asset,
     setAsset,
@@ -87,8 +89,8 @@ function BuyPage() {
           <div className="stack">
             <div className="info-box">
               <strong>M-Pesa payment instructions</strong>
-              <code>Paybill: {APP_CONFIG.paybillNumber}</code>
-              <code>Business Name: {APP_CONFIG.tillName}</code>
+              <code>Paybill: {settings.mpesaPaybillNumber}</code>
+              <code>Business Name: {settings.mpesaTillName}</code>
               <code>Amount: KES {currentOrder.kesAmount.toLocaleString()}</code>
             </div>
 
@@ -128,6 +130,32 @@ function BuyPage() {
           <li>3. Pay the shown KES amount via M-Pesa.</li>
           <li>4. Submit the transaction code to mark the order as paid.</li>
         </ul>
+        <div className="button-row">
+          <button
+            type="button"
+            className="button-secondary"
+            onClick={() =>
+              openSupportEmail({
+                subject: "TMpesa buy support",
+                body: "Hello TMpesa team,\n\nI need help with my buy order.",
+              })
+            }
+          >
+            Support
+          </button>
+          <button
+            type="button"
+            className="button-ghost"
+            onClick={() =>
+              openSupportEmail({
+                subject: "TMpesa delayed buy order",
+                body: "Hello TMpesa team,\n\nMy buy order is delayed. Please assist.",
+              })
+            }
+          >
+            Payment Delay
+          </button>
+        </div>
       </aside>
     </div>
   );

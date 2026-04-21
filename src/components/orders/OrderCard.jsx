@@ -1,3 +1,4 @@
+import { getCurrentUser } from "../../services";
 import StatusPill from "./StatusPill";
 
 function formatDate(dateValue) {
@@ -5,6 +6,8 @@ function formatDate(dateValue) {
 }
 
 function OrderCard({ order, children }) {
+  const user = getCurrentUser();
+
   return (
     <article className="order-card stack">
       <div className="split">
@@ -21,8 +24,10 @@ function OrderCard({ order, children }) {
         <span>KES Value: KES {order.kesAmount.toLocaleString()}</span>
         {order.userLabel ? <span>User: {order.userLabel}</span> : null}
         {order.userPhone ? <span>User Phone: {order.userPhone}</span> : null}
-        {order.userWalletAddress ? <span>Wallet: {order.userWalletAddress}</span> : null}
+        {user?.isAdmin && order.userWalletAddress ? <span>Wallet: {order.userWalletAddress}</span> : null}
         {order.walletAddress ? <span>Destination: {order.walletAddress}</span> : null}
+        {order.paymentMethod ? <span>Method: {order.paymentMethod}</span> : null}
+        {order.paymentSummary ? <span>Payment Note: {order.paymentSummary}</span> : null}
         {order.paymentReference ? <span>Reference: {order.paymentReference}</span> : null}
         <span>Created: {formatDate(order.createdAt)}</span>
       </div>

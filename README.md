@@ -1,29 +1,34 @@
 # WorldTMpesa
 
-This repository contains `TMpesa`, a React + Vite World App mini app prototype for manually exchanging crypto and Kenyan Shillings through M-Pesa. It is frontend-only for now and stores users and orders in `localStorage`.
+This repository contains `TMpesa`, a React + Vite World mini app for manually exchanging crypto and Kenyan Shillings through M-Pesa. It is frontend-only for now and stores users and orders in `localStorage`.
 
 ## Features
 
 - Local signup and login
 - World App wallet-auth entry path
 - Dashboard with quick actions
-- Sell flow: crypto to KES
+- Sell flow: crypto to KES with in-mini-app WLD send
 - Buy flow: M-Pesa to crypto
 - Orders page with status tracking
 - Admin simulation page for manual confirmation
+- Admin-editable rates, receiver wallet, M-Pesa details, and support email
+- Gmail support and payment-delay actions for users
 
 ## Product Context
 
 - Built to run as a World App mini app with MiniKit integration
 - Keeps a browser preview mode so the UI can still be tested outside World App
 - Uses World App wallet auth as the preferred entry path, with local login only as a fallback for development
-- Current version is still frontend-only and does not yet verify SIWE on a backend
+- Uses World `Pay` for the WLD sell flow inside the mini app when opened in World App
+- Includes repo assets in `public/` for favicon, icon, manifest, and content-card placeholder
+- Current version is still frontend-only and does not yet verify SIWE or payment status on a backend
 
 ## Important Prototype Note
 
 - The current wallet auth flow is a frontend prototype only
 - Before submission or production use, add backend SIWE nonce generation and signature verification
-- World's docs recommend Wallet Auth as the primary login flow for mini apps and backend verification for the returned payload
+- Before production payouts, verify `Pay` transactions on a backend and whitelist the receiver wallet in the World Developer Portal
+- World's docs recommend Wallet Auth as the primary login flow for mini apps and backend verification for the returned payloads
 
 ## Review-Safe Naming
 

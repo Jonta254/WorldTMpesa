@@ -1,12 +1,22 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import OrderCard from "../../components/orders/OrderCard";
-import { getAllOrders, getCurrentUser, getExchangeRates, updateExchangeRates, updateOrder } from "../../services";
+import { useAppSettings } from "../../hooks/useAppSettings";
 import { useExchangeRates } from "../../hooks/useExchangeRate";
+import {
+  getAllOrders,
+  getCurrentUser,
+  getExchangeRates,
+  openOrderSupportEmail,
+  updateExchangeRates,
+  updateOperationalSettings,
+  updateOrder,
+} from "../../services";
 
 function AdminPage() {
   const user = getCurrentUser();
   const liveRates = useExchangeRates();
+  const liveSettings = useAppSettings();
 
   if (!user?.isAdmin) {
     return <Navigate to="/" replace />;
@@ -19,8 +29,16 @@ function AdminPage() {
       return accumulator;
     }, {}),
   );
+  const [operationalInputs, setOperationalInputs] = useState(() => ({
+    sellWalletAddress: liveSettings.sellWalletAddress,
+    mpesaPaybillNumber: liveSettings.mpesaPaybillNumber,
+    mpesaTillName: liveSettings.mpesaTillName,
+    supportEmail: liveSettings.supportEmail,
+  }));
   const [rateMessage, setRateMessage] = useState("");
   const [rateError, setRateError] = useState("");
+  const [settingsMessage, setSettingsMessage] = useState("");
+  const [settingsError, setSettingsError] = useState("");
 
   const handleStatusUpdate = (orderId, status) => {
     updateOrder(orderId, { status });
@@ -42,6 +60,24 @@ function AdminPage() {
       setRateMessage("Exchange rates updated successfully.");
     } catch (error) {
       setRateError(error.message);
+    }
+  };
+
+  const handleSettingsSave = () => {
+    setSettingsError("");
+    setSettingsMessage("");
+
+    try {
+      const nextSettings = updateOperationalSettings(operationalInputs);
+      setOperationalInputs({
+        sellWalletAddress: nextSettings.sellWalletAddress,
+        mpesaPaybillNumber: nextSettings.mpesaPaybillNumber,
+        mpesaTillName: nextSettings.mpesaTillName,
+        supportEmail: nextSettings.supportEmail,
+      });
+      setSettingsMessage("Operational settings updated successfully.");
+    } catch (error) {
+      setSettingsError(error.message);
     }
   };
 
@@ -113,6 +149,91 @@ function AdminPage() {
         </button>
       </section>
 
+      <section className="panel stack">
+        <div>
+          <h3>Mini App Operations</h3>
+          <p className="muted">
+            Set the live wallet receiver for sell-side WLD, the M-Pesa paybill details for buy
+            orders, and the Gmail support destination for user help actions.
+          </p>
+        </div>
+
+        {settingsError ? <div className="error">{settingsError}</div> : null}
+        {settingsMessage ? <div className="notice">{settingsMessage}</div> : null}
+
+        <div className="stack">
+          <div className="field">
+            <label htmlFor="sellWalletAddress">Sell Wallet Address</label>
+            <input
+              id="sellWalletAddress"
+              value={operationalInputs.sellWalletAddress}
+              onChange={(event) =>
+                setOperationalInputs((current) => ({
+                  ...current,
+                  sellWalletAddress: event.target.value,
+                }))
+              }
+              placeholder="0xRecipientWallet"
+            />
+            <span className="muted field-hint">
+              WLD sell orders use this wallet for the in-app send flow inside TMpesa.
+            </span>
+          </div>
+
+          <div className="info-grid">
+            <div className="field">
+              <label htmlFor="mpesaPaybillNumber">M-Pesa Paybill / Till</label>
+              <input
+                id="mpesaPaybillNumber"
+                value={operationalInputs.mpesaPaybillNumber}
+                onChange={(event) =>
+                  setOperationalInputs((current) => ({
+                    ...current,
+                    mpesaPaybillNumber: event.target.value,
+                  }))
+                }
+                placeholder="522522"
+              />
+            </div>
+
+            <div className="field">
+              <label htmlFor="mpesaTillName">Business Name</label>
+              <input
+                id="mpesaTillName"
+                value={operationalInputs.mpesaTillName}
+                onChange={(event) =>
+                  setOperationalInputs((current) => ({
+                    ...current,
+                    mpesaTillName: event.target.value,
+                  }))
+                }
+                placeholder="TMpesa Exchange"
+              />
+            </div>
+          </div>
+
+          <div className="field">
+            <label htmlFor="supportEmail">Support Gmail</label>
+            <input
+              id="supportEmail"
+              type="email"
+              value={operationalInputs.supportEmail}
+              onChange={(event) =>
+                setOperationalInputs((current) => ({
+                  ...current,
+                  supportEmail: event.target.value,
+                }))
+              }
+              placeholder="brianokind02022@gmail.com"
+            />
+          </div>
+        </div>
+
+        <button type="button" className="button" onClick={handleSettingsSave}>
+          Save Mini App Settings
+        </button>
+      </section>
+
       {orders.length ? (
         <section className="order-grid">
           {orders.map((order) => (
@@ -136,6 +257,13 @@ function AdminPage() {
                     Mark Completed
                   </button>
                 ) : null}
+                <button
+                  type="button"
+                  className="button-ghost"
+                  onClick={() => openOrderSupportEmail(order, "support")}
+                >
+                  Email User Support
+                </button>
               </div>
             </OrderCard>
           ))}

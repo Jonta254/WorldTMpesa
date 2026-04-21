@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import OrderCard from "../../components/orders/OrderCard";
-import { getCurrentUser, getOrdersForCurrentUser } from "../../services";
+import { getCurrentUser, getOrdersForCurrentUser, openOrderSupportEmail } from "../../services";
 
 function OrdersPage() {
   const orders = getOrdersForCurrentUser();
@@ -25,7 +25,24 @@ function OrdersPage() {
       {orders.length ? (
         <section className="order-grid">
           {orders.map((order) => (
-            <OrderCard key={order.id} order={order} />
+            <OrderCard key={order.id} order={order}>
+              <div className="button-row">
+                <button
+                  type="button"
+                  className="button-secondary"
+                  onClick={() => openOrderSupportEmail(order, "support")}
+                >
+                  Support
+                </button>
+                <button
+                  type="button"
+                  className="button-ghost"
+                  onClick={() => openOrderSupportEmail(order, "delay")}
+                >
+                  Payment Delay
+                </button>
+              </div>
+            </OrderCard>
           ))}
         </section>
       ) : (

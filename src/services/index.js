@@ -19,7 +19,15 @@ export {
   getExchangeRates,
   getSettings,
   initializeSettings,
+  subscribeToSettings,
   subscribeToRateUpdates,
+  updateOperationalSettings,
   updateExchangeRates,
 } from "./settingsService";
-export { connectWithWorldAppWallet, getWorldAppContext } from "./worldAppService";
+export { openOrderSupportEmail, openSupportEmail } from "./supportService";
+export {
+  canUseWorldPay,
+  connectWithWorldAppWallet,
+  getWorldAppContext,
+  requestWorldPayment,
+} from "./worldAppService";

@@ -50,7 +50,7 @@ function LoginPage() {
         <section className="auth-card stack">
           <div>
             <span className="brand-kicker">Welcome back</span>
-            <h2>Enter through World App or browser preview</h2>
+            <h2>Enter through TMpesa or browser preview</h2>
             <p className="muted">
               Use wallet auth inside World App, or continue with the local browser login while the
               backend is still pending.

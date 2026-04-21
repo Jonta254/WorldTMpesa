@@ -1,15 +1,18 @@
 export const APP_CONFIG = {
   appName: "TMpesa",
   repoName: "WorldTMpesa",
-  defaultRatesKes: {
-    WLD: 120,
-    USDT: 128,
+  defaultSettings: {
+    ratesKes: {
+      WLD: 120,
+      USDT: 128,
+    },
+    sellWalletAddress: "0xWORLDTMPESA-WLD-WALLET-001",
+    mpesaPaybillNumber: "522522",
+    mpesaTillName: "TMpesa Exchange",
+    supportEmail: "brianokind02022@gmail.com",
   },
   supportedAssets: ["WLD", "USDT"],
-  sellWalletAddress: "0xWORLDTMPESA-WLD-WALLET-001",
-  paybillNumber: "522522",
-  tillName: "TMpesa Exchange",
-  supportEmail: "support@tmpesa.app",
+  worldPaySupportedAssets: ["WLD"],
 };
 
 export const STORAGE_KEYS = {

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useAppSettings } from "../../hooks/useAppSettings";
 import { APP_CONFIG, getCurrentUser, getOrdersForCurrentUser, getWorldAppContext } from "../../services";
 import { useExchangeRates } from "../../hooks/useExchangeRate";
 
@@ -6,6 +7,7 @@ function DashboardPage() {
   const user = getCurrentUser();
   const worldApp = getWorldAppContext();
   const exchangeRates = useExchangeRates();
+  const settings = useAppSettings();
   const orders = getOrdersForCurrentUser();
   const pendingOrders = orders.filter((order) => order.status === "pending").length;
   const paidOrders = orders.filter((order) => order.status === "paid").length;
@@ -20,8 +22,8 @@ function DashboardPage() {
             <div>
               <h2 className="brand-title">{APP_CONFIG.appName} for WLD, USDT and M-Pesa.</h2>
               <p className="brand-copy">
-                Welcome {user?.fullName}. This mini app keeps the exchange flow lightweight inside
-                World App while the admin confirms each order manually.
+                Welcome {user?.fullName}. TMpesa keeps exchange flows lightweight inside the wallet,
+                while your admin still reviews every payout manually.
               </p>
             </div>
             <div className="amount-line">
@@ -30,8 +32,8 @@ function DashboardPage() {
             </div>
             <div className="info-grid">
               <div className="info-box">
-                <strong>Session</strong>
-                <code>{user?.authMethod === "world-app" ? "Wallet-auth prototype" : "Local browser login"}</code>
+                <strong>Sell Receiver</strong>
+                <code>{settings.sellWalletAddress}</code>
               </div>
               <div className="info-box">
                 <strong>Launch Context</strong>
@@ -65,8 +67,8 @@ function DashboardPage() {
           <span className="tag">Sell WLD</span>
           <h3>Crypto to cash</h3>
           <p className="muted">
-            Enter the amount of WLD, get the KES value instantly, send crypto to the wallet, and
-            submit your transaction hash.
+            In World App, WLD users can open the native payment sheet and send without leaving
+            TMpesa.
           </p>
           <Link to="/sell" className="button">
             Sell WLD
@@ -77,8 +79,8 @@ function DashboardPage() {
           <span className="tag">Buy WLD</span>
           <h3>Cash to crypto</h3>
           <p className="muted">
-            Enter the amount you want to buy, confirm the KES amount, pay via M-Pesa, and submit
-            your transaction code.
+            The buy flow stays manual: confirm the KES amount, pay via M-Pesa, and submit your
+            transaction code.
           </p>
           <Link to="/buy" className="button">
             Buy WLD

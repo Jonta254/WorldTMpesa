@@ -1,4 +1,24 @@
 import { MiniKit } from "@worldcoin/minikit-js";
+import { APP_CONFIG } from "../config/appConfig";
+
+const TOKEN_DECIMALS = {
+  WLD: 18,
+  USDT: 6,
+};
+
+function toTokenUnits(amount, decimals) {
+  const stringAmount = String(amount).trim();
+
+  if (!/^\d+(\.\d+)?$/.test(stringAmount)) {
+    throw new Error("Enter a valid amount before sending the payment.");
+  }
+
+  const [wholePart, fractionPart = ""] = stringAmount.split(".");
+  const normalizedFraction = `${fractionPart}${"0".repeat(decimals)}`.slice(0, decimals);
+  const units = `${wholePart}${normalizedFraction}`.replace(/^0+(?=\d)/, "");
+
+  return units || "0";
+}
 
 function createNonce(length = 16) {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
@@ -51,5 +71,48 @@ export async function connectWithWorldAppWallet() {
     fullName: MiniKit.user?.username || "World App user",
     preferredCurrency: MiniKit.user?.preferredCurrency || "KES",
     worldAppVersion: MiniKit.deviceProperties?.worldAppVersion || null,
+  };
+}
+
+export function canUseWorldPay(asset) {
+  return APP_CONFIG.worldPaySupportedAssets.includes(asset);
+}
+
+export async function requestWorldPayment({ amount, asset = "WLD", description, reference, to }) {
+  if (!MiniKit.isInstalled()) {
+    throw new Error("Open TMpesa inside World App to send WLD without leaving the mini app.");
+  }
+
+  if (!canUseWorldPay(asset)) {
+    throw new Error(`${asset} payments inside TMpesa are not enabled yet.`);
+  }
+
+  if (!to?.trim()) {
+    throw new Error("Set the sell wallet address in the admin dashboard before using in-app send.");
+  }
+
+  const result = await MiniKit.pay({
+    reference,
+    to: to.trim(),
+    tokens: [
+      {
+        symbol: asset,
+        token_amount: toTokenUnits(amount, TOKEN_DECIMALS[asset] || 18),
+      },
+    ],
+    description,
+    fallback: () => undefined,
+  });
+
+  if (result.executedWith === "fallback") {
+    throw new Error("This payment needs to be completed inside World App.");
+  }
+
+  return {
+    chain: result.data.chain,
+    from: result.data.from,
+    reference: result.data.reference,
+    timestamp: result.data.timestamp,
+    transactionId: result.data.transactionId,
   };
 }
