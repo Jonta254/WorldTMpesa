@@ -18,6 +18,8 @@ function SellPage() {
     setAsset,
     cryptoAmount,
     setCryptoAmount,
+    payoutPhoneNumber,
+    setPayoutPhoneNumber,
     paymentReference,
     setPaymentReference,
     step,
@@ -109,6 +111,15 @@ function SellPage() {
                 placeholder="10"
               />
             </div>
+            <div className="field">
+              <label htmlFor="payoutPhoneNumber">M-Pesa payout number</label>
+              <input
+                id="payoutPhoneNumber"
+                value={payoutPhoneNumber}
+                onChange={(event) => setPayoutPhoneNumber(event.target.value)}
+                placeholder="0712345678"
+              />
+            </div>
 
             <div className="amount-line">
               <span>You will receive</span>
@@ -145,6 +156,10 @@ function SellPage() {
             <div className="amount-line">
               <span>Order value</span>
               <strong>KES {currentOrder.kesAmount.toLocaleString()}</strong>
+            </div>
+            <div className="info-box">
+              <strong>M-Pesa payout destination</strong>
+              <code>{currentOrder.payoutPhoneNumber}</code>
             </div>
 
             {step === 2 ? (

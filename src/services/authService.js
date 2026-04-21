@@ -5,6 +5,7 @@ const seedAdminUser = {
   id: "admin-001",
   fullName: "WorldTMpesa Admin",
   phone: "0700000000",
+  mpesaPhoneNumber: "0700000000",
   password: "admin123",
   walletAddress: "",
   username: "tmpesa-admin",
@@ -40,6 +41,7 @@ export function signupUser(payload) {
     id: crypto.randomUUID(),
     fullName: payload.fullName,
     phone: payload.phone,
+    mpesaPhoneNumber: payload.mpesaPhoneNumber,
     password: payload.password,
     walletAddress: "",
     username: "",
@@ -71,6 +73,7 @@ export function loginWithWorldApp(profile) {
     id: existingUser?.id || crypto.randomUUID(),
     fullName: profile.fullName || profile.username || "World App user",
     phone: existingUser?.phone || "",
+    mpesaPhoneNumber: existingUser?.mpesaPhoneNumber || "",
     password: existingUser?.password || "",
     walletAddress: profile.walletAddress,
     username: profile.username || existingUser?.username || "",
@@ -89,6 +92,25 @@ export function loginWithWorldApp(profile) {
   writeStorage(STORAGE_KEYS.users, nextUsers);
   writeStorage(STORAGE_KEYS.currentUser, user);
   return user;
+}
+
+export function updateCurrentUserProfile(changes) {
+  const currentUser = getCurrentUser();
+
+  if (!currentUser) {
+    throw new Error("You must be logged in to update your profile.");
+  }
+
+  const nextUser = {
+    ...currentUser,
+    ...changes,
+    updatedAt: new Date().toISOString(),
+  };
+
+  const users = getUsers().map((user) => (user.id === currentUser.id ? nextUser : user));
+  writeStorage(STORAGE_KEYS.users, users);
+  writeStorage(STORAGE_KEYS.currentUser, nextUser);
+  return nextUser;
 }
 
 export function logoutUser() {

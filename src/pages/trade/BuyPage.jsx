@@ -1,9 +1,10 @@
 import { useAppSettings } from "../../hooks/useAppSettings";
 import { useOrderFlow } from "../../hooks/useOrderFlow";
-import { openSupportEmail } from "../../services";
+import { getCurrentUser, openSupportEmail } from "../../services";
 
 function BuyPage() {
   const settings = useAppSettings();
+  const currentUser = getCurrentUser();
   const {
     asset,
     setAsset,
@@ -40,6 +41,13 @@ function BuyPage() {
 
         {step === 1 ? (
           <div className="stack">
+            {currentUser?.walletAddress || currentUser?.username ? (
+              <div className="info-box">
+                <strong>Detected World destination</strong>
+                {currentUser?.username ? <code>Username: @{currentUser.username}</code> : null}
+                {currentUser?.walletAddress ? <code>Wallet: {currentUser.walletAddress}</code> : null}
+              </div>
+            ) : null}
             <div className="field">
               <label htmlFor="buyAsset">Asset</label>
               <select id="buyAsset" value={asset} onChange={(event) => setAsset(event.target.value)}>
@@ -70,7 +78,7 @@ function BuyPage() {
                 id="walletAddress"
                 value={walletAddress}
                 onChange={(event) => setWalletAddress(event.target.value)}
-                placeholder="0xYourWalletAddress"
+                placeholder={currentUser?.walletAddress || "0xYourWalletAddress"}
               />
             </div>
 
@@ -92,6 +100,8 @@ function BuyPage() {
               <code>Paybill: {settings.mpesaPaybillNumber}</code>
               <code>Business Name: {settings.mpesaTillName}</code>
               <code>Amount: KES {currentOrder.kesAmount.toLocaleString()}</code>
+              {currentOrder.destinationUsername ? <code>Send WLD to: @{currentOrder.destinationUsername}</code> : null}
+              {currentOrder.walletAddress ? <code>Destination wallet: {currentOrder.walletAddress}</code> : null}
             </div>
 
             {step === 2 ? (

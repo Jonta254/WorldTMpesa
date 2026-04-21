@@ -6,6 +6,7 @@ export {
   loginWithWorldApp,
   logoutUser,
   signupUser,
+  updateCurrentUserProfile,
 } from "./authService";
 export {
   createOrder,
@@ -26,6 +27,7 @@ export {
 } from "./settingsService";
 export { openOrderSupportEmail, openSupportEmail } from "./supportService";
 export {
+  buildWorldAppDeeplink,
   canUseWorldPay,
   connectWithWorldAppWallet,
   getWorldAppContext,

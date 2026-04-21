@@ -1,5 +1,12 @@
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { APP_CONFIG, getCurrentUser, getWorldAppContext, logoutUser } from "../../services";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useAppSettings } from "../../hooks/useAppSettings";
+import {
+  APP_CONFIG,
+  buildWorldAppDeeplink,
+  getCurrentUser,
+  getWorldAppContext,
+  logoutUser,
+} from "../../services";
 
 const navItems = [
   { to: "/", label: "Dashboard" },
@@ -11,8 +18,11 @@ const navItems = [
 function AppShell() {
   const user = getCurrentUser();
   const navigate = useNavigate();
+  const location = useLocation();
   const worldApp = getWorldAppContext();
+  const settings = useAppSettings();
   const insets = worldApp.deviceProperties?.safeAreaInsets;
+  const worldAppLink = buildWorldAppDeeplink(location.pathname);
 
   const handleLogout = () => {
     logoutUser();
@@ -40,6 +50,11 @@ function AppShell() {
         <div className="context-strip">
           <span>{worldApp.isInstalled ? "Opened in World App" : "Browser preview mode"}</span>
           <span>{user?.username ? `@${user.username}` : user?.phone || "Local prototype session"}</span>
+          {!worldApp.isInstalled && settings.worldAppId ? (
+            <a href={worldAppLink} className="text-link">
+              Open in World App
+            </a>
+          ) : null}
         </div>
 
         <nav className="nav-row">

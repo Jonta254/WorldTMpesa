@@ -1,11 +1,15 @@
 import { useMemo, useState } from "react";
-import { APP_CONFIG, createOrder, updateOrder } from "../services";
+import { APP_CONFIG, createOrder, getCurrentUser, updateCurrentUserProfile, updateOrder } from "../services";
 import { useExchangeRate } from "./useExchangeRate";
 
 export function useOrderFlow(type, initialAsset = "WLD") {
+  const currentUser = getCurrentUser();
   const [asset, setAsset] = useState(initialAsset);
   const [cryptoAmount, setCryptoAmount] = useState("");
-  const [walletAddress, setWalletAddress] = useState("");
+  const [walletAddress, setWalletAddress] = useState(() => currentUser?.walletAddress || "");
+  const [payoutPhoneNumber, setPayoutPhoneNumber] = useState(
+    () => currentUser?.mpesaPhoneNumber || currentUser?.phone || "",
+  );
   const [paymentReference, setPaymentReference] = useState("");
   const [step, setStep] = useState(1);
   const [currentOrder, setCurrentOrder] = useState(null);
@@ -34,12 +38,23 @@ export function useOrderFlow(type, initialAsset = "WLD") {
       return null;
     }
 
+    if (type === "sell" && !payoutPhoneNumber.trim()) {
+      setError("Enter the M-Pesa phone number that should receive your KES payout.");
+      return null;
+    }
+
+    if (type === "sell" && payoutPhoneNumber.trim() !== (currentUser?.mpesaPhoneNumber || "")) {
+      updateCurrentUserProfile({ mpesaPhoneNumber: payoutPhoneNumber.trim() });
+    }
+
     const order = createOrder({
       type,
       asset,
       cryptoAmount,
       kesAmount,
       walletAddress: walletAddress.trim(),
+      payoutPhoneNumber: payoutPhoneNumber.trim(),
+      destinationUsername: currentUser?.username || "",
     });
 
     setCurrentOrder(order);
@@ -79,6 +94,8 @@ export function useOrderFlow(type, initialAsset = "WLD") {
     setCryptoAmount,
     walletAddress,
     setWalletAddress,
+    payoutPhoneNumber,
+    setPayoutPhoneNumber,
     paymentReference,
     setPaymentReference,
     step,

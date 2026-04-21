@@ -1,12 +1,21 @@
 import { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthHero from "../../components/auth/AuthHero";
-import { connectWithWorldAppWallet, getWorldAppContext, loginUser, loginWithWorldApp } from "../../services";
+import { useAppSettings } from "../../hooks/useAppSettings";
+import {
+  buildWorldAppDeeplink,
+  connectWithWorldAppWallet,
+  getWorldAppContext,
+  loginUser,
+  loginWithWorldApp,
+} from "../../services";
 
 function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const settings = useAppSettings();
   const worldApp = useMemo(() => getWorldAppContext(), []);
+  const worldAppLink = buildWorldAppDeeplink(location.state?.from?.pathname || "/");
   const [form, setForm] = useState({ phone: "", password: "" });
   const [error, setError] = useState("");
   const [worldLoading, setWorldLoading] = useState(false);
@@ -73,6 +82,11 @@ function LoginPage() {
                 ? "World App detected. You can start with wallet authentication."
                 : "Open this app inside World App to use wallet authentication. Browser preview stays available below."}
             </div>
+            {!worldApp.isInstalled && settings.worldAppId ? (
+              <a href={worldAppLink} className="button-secondary">
+                Open in World App
+              </a>
+            ) : null}
           </div>
 
           <div className="divider-label">Browser preview</div>

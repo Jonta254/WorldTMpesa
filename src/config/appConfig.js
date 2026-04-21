@@ -10,6 +10,7 @@ export const APP_CONFIG = {
     mpesaPaybillNumber: "522522",
     mpesaTillName: "TMpesa Exchange",
     supportEmail: "brianokind02022@gmail.com",
+    worldAppId: "",
   },
   supportedAssets: ["WLD", "USDT"],
   worldPaySupportedAssets: ["WLD"],

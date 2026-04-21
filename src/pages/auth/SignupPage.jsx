@@ -5,7 +5,12 @@ import { signupUser } from "../../services";
 
 function SignupPage() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ fullName: "", phone: "", password: "" });
+  const [form, setForm] = useState({
+    fullName: "",
+    phone: "",
+    mpesaPhoneNumber: "",
+    password: "",
+  });
   const [error, setError] = useState("");
 
   const handleChange = (event) => {
@@ -61,6 +66,18 @@ function SignupPage() {
                 name="phone"
                 placeholder="0712345678"
                 value={form.phone}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="field">
+              <label htmlFor="mpesaPhoneNumber">M-Pesa Payout Number</label>
+              <input
+                id="mpesaPhoneNumber"
+                name="mpesaPhoneNumber"
+                placeholder="0712345678"
+                value={form.mpesaPhoneNumber}
                 onChange={handleChange}
                 required
               />

@@ -90,6 +90,7 @@ export function updateOperationalSettings(nextSettings) {
   const mpesaPaybillNumber = (nextSettings.mpesaPaybillNumber || "").trim();
   const mpesaTillName = (nextSettings.mpesaTillName || "").trim();
   const supportEmail = (nextSettings.supportEmail || "").trim();
+  const worldAppId = (nextSettings.worldAppId || "").trim();
 
   if (!sellWalletAddress) {
     throw new Error("Enter the wallet address that should receive sell-side WLD payments.");
@@ -113,6 +114,7 @@ export function updateOperationalSettings(nextSettings) {
     mpesaPaybillNumber,
     mpesaTillName,
     supportEmail,
+    worldAppId,
     updatedAt: new Date().toISOString(),
   };
 

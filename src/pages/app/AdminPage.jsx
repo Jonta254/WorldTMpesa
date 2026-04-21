@@ -34,11 +34,13 @@ function AdminPage() {
     mpesaPaybillNumber: liveSettings.mpesaPaybillNumber,
     mpesaTillName: liveSettings.mpesaTillName,
     supportEmail: liveSettings.supportEmail,
+    worldAppId: liveSettings.worldAppId || "",
   }));
   const [rateMessage, setRateMessage] = useState("");
   const [rateError, setRateError] = useState("");
   const [settingsMessage, setSettingsMessage] = useState("");
   const [settingsError, setSettingsError] = useState("");
+  const payoutQueue = orders.filter((order) => order.type === "sell" && order.status === "paid");
 
   const handleStatusUpdate = (orderId, status) => {
     updateOrder(orderId, { status });
@@ -74,6 +76,7 @@ function AdminPage() {
         mpesaPaybillNumber: nextSettings.mpesaPaybillNumber,
         mpesaTillName: nextSettings.mpesaTillName,
         supportEmail: nextSettings.supportEmail,
+        worldAppId: nextSettings.worldAppId || "",
       });
       setSettingsMessage("Operational settings updated successfully.");
     } catch (error) {
@@ -227,12 +230,53 @@ function AdminPage() {
               placeholder="brianokind02022@gmail.com"
             />
           </div>
+
+          <div className="field">
+            <label htmlFor="worldAppId">World App ID</label>
+            <input
+              id="worldAppId"
+              value={operationalInputs.worldAppId || ""}
+              onChange={(event) =>
+                setOperationalInputs((current) => ({
+                  ...current,
+                  worldAppId: event.target.value,
+                }))
+              }
+              placeholder="app_xxxxxxxxxxxxx"
+            />
+            <span className="muted field-hint">
+              Used to build the Open in World App button with the official mini app deeplink format.
+            </span>
+          </div>
         </div>
 
         <button type="button" className="button" onClick={handleSettingsSave}>
           Save Mini App Settings
         </button>
       </section>
+
+      {payoutQueue.length ? (
+        <section className="panel stack">
+          <div>
+            <span className="brand-kicker">Payout Queue</span>
+            <h3>Sell orders ready for M-Pesa payout</h3>
+            <p className="muted">
+              These users have already sent WLD. Use the name and M-Pesa number below when sending
+              their KES payout.
+            </p>
+          </div>
+          <div className="stack">
+            {payoutQueue.map((order) => (
+              <div key={`queue-${order.id}`} className="info-box">
+                <strong>{order.userLabel}</strong>
+                <code>M-Pesa: {order.payoutPhoneNumber || order.userMpesaPhoneNumber || "Not provided"}</code>
+                <code>Asset: {order.cryptoAmount} {order.asset}</code>
+                <code>KES to pay: {order.kesAmount.toLocaleString()}</code>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {orders.length ? (
         <section className="order-grid">

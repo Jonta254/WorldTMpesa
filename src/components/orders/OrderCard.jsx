@@ -24,7 +24,9 @@ function OrderCard({ order, children }) {
         <span>KES Value: KES {order.kesAmount.toLocaleString()}</span>
         {order.userLabel ? <span>User: {order.userLabel}</span> : null}
         {order.userPhone ? <span>User Phone: {order.userPhone}</span> : null}
+        {order.payoutPhoneNumber ? <span>M-Pesa Payout: {order.payoutPhoneNumber}</span> : null}
         {user?.isAdmin && order.userWalletAddress ? <span>Wallet: {order.userWalletAddress}</span> : null}
+        {order.destinationUsername ? <span>Destination Username: @{order.destinationUsername}</span> : null}
         {order.walletAddress ? <span>Destination: {order.walletAddress}</span> : null}
         {order.paymentMethod ? <span>Method: {order.paymentMethod}</span> : null}
         {order.paymentSummary ? <span>Payment Note: {order.paymentSummary}</span> : null}

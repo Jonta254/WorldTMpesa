@@ -1,5 +1,6 @@
 import { MiniKit } from "@worldcoin/minikit-js";
 import { APP_CONFIG } from "../config/appConfig";
+import { getSettings } from "./settingsService";
 
 const TOKEN_DECIMALS = {
   WLD: 18,
@@ -76,6 +77,17 @@ export async function connectWithWorldAppWallet() {
 
 export function canUseWorldPay(asset) {
   return APP_CONFIG.worldPaySupportedAssets.includes(asset);
+}
+
+export function buildWorldAppDeeplink(path = "/") {
+  const appId = getSettings().worldAppId;
+
+  if (!appId) {
+    return "";
+  }
+
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `https://world.org/mini-app?app_id=${encodeURIComponent(appId)}&path=${encodeURIComponent(normalizedPath)}`;
 }
 
 export async function requestWorldPayment({ amount, asset = "WLD", description, reference, to }) {
