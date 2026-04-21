@@ -240,6 +240,144 @@ button:disabled {
   padding: 26px 22px;
 }
 
+.hero-card-featured {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(145deg, rgba(17, 24, 39, 0.98), rgba(11, 15, 26, 0.94)),
+    radial-gradient(circle at top right, rgba(79, 124, 255, 0.26), transparent 34%);
+}
+
+.hero-card-featured::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: linear-gradient(180deg, black, transparent 72%);
+}
+
+.hero-card-featured > * {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(54, 211, 153, 0.28);
+  border-radius: 999px;
+  padding: 6px 11px;
+  color: #a7f3d0;
+  background: rgba(54, 211, 153, 0.1);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.live-badge::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 0 5px rgba(54, 211, 153, 0.12);
+}
+
+.rate-board {
+  display: grid;
+  gap: 12px;
+}
+
+.rate-card {
+  display: grid;
+  gap: 4px;
+  padding: 17px;
+  border-radius: 22px;
+  background: rgba(148, 163, 184, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.rate-card.primary-rate {
+  background: linear-gradient(135deg, rgba(79, 124, 255, 0.22), rgba(54, 211, 153, 0.1));
+  border-color: rgba(79, 124, 255, 0.34);
+}
+
+.rate-card span,
+.trust-grid span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.rate-card strong {
+  color: #f8fbff;
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.rate-card small {
+  color: #c9d7ff;
+}
+
+.fee-note {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(251, 191, 36, 0.09);
+  border: 1px solid rgba(251, 191, 36, 0.18);
+}
+
+.fee-note p {
+  margin: 6px 0 0;
+  color: #d9e2f5;
+}
+
+.fee-note span {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: rgba(251, 191, 36, 0.12);
+  color: #ffe8a3;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.trust-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.trust-grid div {
+  min-width: 0;
+  padding: 13px 12px;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.68);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.trust-grid strong {
+  display: block;
+  margin-top: 5px;
+  color: #edf2ff;
+  font-size: 0.95rem;
+}
+
 .hero-grid,
 .action-grid,
 .content-grid,
@@ -456,6 +594,10 @@ button:disabled {
 
   .stats-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .rate-board {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .info-grid {

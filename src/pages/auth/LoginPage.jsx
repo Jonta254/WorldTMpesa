@@ -61,8 +61,8 @@ function LoginPage() {
             <span className="brand-kicker">Welcome back</span>
             <h2>Enter through TMpesa or browser preview</h2>
             <p className="muted">
-              Use wallet auth inside World App, or continue with the local browser login while the
-              backend is still pending.
+              Use wallet auth inside World App for the real mini app flow, or use browser preview
+              only for testing the interface.
             </p>
           </div>
 
