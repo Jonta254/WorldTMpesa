@@ -26,6 +26,7 @@ export {
   updateExchangeRates,
 } from "./settingsService";
 export { openOrderSupportEmail, openSupportEmail } from "./supportService";
+export { notifyAdminOrderCreated } from "./notificationService";
 export {
   buildWorldAppDeeplink,
   canUseWorldPay,

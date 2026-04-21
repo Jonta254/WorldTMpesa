@@ -1,6 +1,7 @@
 import { STORAGE_KEYS } from "../config/appConfig";
 import { getCurrentUser } from "./authService";
 import { readStorage, writeStorage } from "./localStorage";
+import { notifyAdminOrderCreated } from "./notificationService";
 
 export function initializeOrders() {
   if (!localStorage.getItem(STORAGE_KEYS.orders)) {
@@ -65,6 +66,7 @@ export function createOrder(payload) {
   };
 
   writeStorage(STORAGE_KEYS.orders, [order, ...orders]);
+  notifyAdminOrderCreated(order);
   return order;
 }
 

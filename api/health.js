@@ -9,5 +9,6 @@ export default async function handler(req, res) {
   sendJson(res, 200, {
     ok: true,
     worldPortalConfigured: hasWorldPortalConfig(),
+    orderNotificationsConfigured: Boolean(process.env.RESEND_API_KEY),
   });
 }
