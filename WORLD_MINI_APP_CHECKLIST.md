@@ -13,7 +13,7 @@ This app is built as a World App Mini App first. The normal web URL is only for 
 - Supported World Pay assets are `WLD` and `USDC`.
 - The receiver wallet is `0x0f029f35a9da4043ff84b2c98a023d0a68eb64b4`.
 - The M-Pesa till number is `5698981`.
-- The support email is `brianokindo2022@gmail.com`.
+- The support email is `brianokindo@gmail.com`.
 - Browser preview mode remains available for testing outside World App.
 
 ## Required World Developer Portal Setup
