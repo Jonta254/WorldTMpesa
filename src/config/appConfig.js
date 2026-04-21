@@ -1,6 +1,7 @@
 export const APP_CONFIG = {
   appName: "TMpesa",
   repoName: "WorldTMpesa",
+  worldAppId: "app_02bd6decc052fc1dfa29487444f6c6f",
   defaultSettings: {
     ratesKes: {
       WLD: 120,
@@ -10,7 +11,7 @@ export const APP_CONFIG = {
     mpesaPaybillNumber: "5698981",
     mpesaTillName: "TMpesa Exchange",
     supportEmail: "brianokindo2022@gmail.com",
-    worldAppId: import.meta.env.VITE_WORLD_APP_ID || "",
+    worldAppId: import.meta.env.VITE_WORLD_APP_ID || "app_02bd6decc052fc1dfa29487444f6c6f",
   },
   supportedAssets: ["WLD", "USDC"],
   worldPaySupportedAssets: ["WLD", "USDC"],

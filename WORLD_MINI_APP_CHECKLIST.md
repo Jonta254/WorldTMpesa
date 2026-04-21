@@ -18,8 +18,8 @@ This app is built as a World App Mini App first. The normal web URL is only for 
 
 ## Required World Developer Portal Setup
 
-- Create the mini app in the World Developer Portal and copy the `app_...` ID.
-- Set `APP_ID` and `VITE_WORLD_APP_ID` in Vercel to that `app_...` value.
+- World App ID captured from Developer Portal: `app_02bd6decc052fc1dfa29487444f6c6f`.
+- Set `APP_ID` and `VITE_WORLD_APP_ID` in Vercel to `app_02bd6decc052fc1dfa29487444f6c6f`.
 - Create a Developer Portal API key and set it as `DEV_PORTAL_API_KEY` in Vercel.
 - Whitelist the receiver wallet address for World Pay.
 - Configure app name as `TMpesa`, not `WorldTMpesa`, to avoid implying official World affiliation.
