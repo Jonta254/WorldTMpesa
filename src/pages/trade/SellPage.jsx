@@ -160,6 +160,16 @@ function SellPage() {
               <strong>KES {currentOrder.kesAmount.toLocaleString()}</strong>
             </div>
             <div className="info-box">
+              <strong>M-Pesa till payment direction</strong>
+              <p className="muted">
+                After placing this sell order, use this till number if you need to make an M-Pesa
+                payment for the order.
+              </p>
+              <code>Till Number: {settings.mpesaPaybillNumber}</code>
+              <code>Business Name: {settings.mpesaTillName}</code>
+              <code>Amount: KES {currentOrder.kesAmount.toLocaleString()}</code>
+            </div>
+            <div className="info-box">
               <strong>M-Pesa payout destination</strong>
               <code>{currentOrder.payoutPhoneNumber}</code>
             </div>
@@ -215,8 +225,9 @@ function SellPage() {
           <li>1. Enter the amount of crypto you want to sell.</li>
           <li>Use WLD or USDT depending on the asset selected.</li>
           <li>2. Confirm the KES value at the current admin rate.</li>
-          <li>3. For WLD inside World App, tap send and complete the payment sheet in-app.</li>
-          <li>4. For browser preview or USDT, send manually and submit the transaction hash.</li>
+          <li>3. After placing the order, follow the M-Pesa till direction shown on screen.</li>
+          <li>4. For WLD inside World App, tap send and complete the payment sheet in-app.</li>
+          <li>5. For browser preview or USDT, send manually and submit the transaction hash.</li>
         </ul>
         <div className="button-row">
           <button

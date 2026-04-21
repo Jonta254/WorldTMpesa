@@ -97,7 +97,7 @@ function BuyPage() {
           <div className="stack">
             <div className="info-box">
               <strong>M-Pesa payment instructions</strong>
-              <code>Paybill: {settings.mpesaPaybillNumber}</code>
+              <code>Till Number: {settings.mpesaPaybillNumber}</code>
               <code>Business Name: {settings.mpesaTillName}</code>
               <code>Amount: KES {currentOrder.kesAmount.toLocaleString()}</code>
               {currentOrder.destinationUsername ? <code>Send WLD to: @{currentOrder.destinationUsername}</code> : null}

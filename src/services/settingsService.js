@@ -3,6 +3,7 @@ import { readStorage, writeStorage } from "./localStorage";
 
 const SETTINGS_UPDATED_EVENT = "worldtmpesa:settings-updated";
 const LEGACY_SELL_WALLET_ADDRESS = "0xWORLDTMPESA-WLD-WALLET-001";
+const LEGACY_MPESA_PAYBILL_NUMBER = "522522";
 
 function getDefaultSettings() {
   return {
@@ -43,6 +44,10 @@ export function initializeSettings() {
 
   if (nextSettings.sellWalletAddress === LEGACY_SELL_WALLET_ADDRESS) {
     nextSettings.sellWalletAddress = APP_CONFIG.defaultSettings.sellWalletAddress;
+  }
+
+  if (nextSettings.mpesaPaybillNumber === LEGACY_MPESA_PAYBILL_NUMBER) {
+    nextSettings.mpesaPaybillNumber = APP_CONFIG.defaultSettings.mpesaPaybillNumber;
   }
 
   writeStorage(STORAGE_KEYS.settings, nextSettings);
