@@ -53,7 +53,7 @@ function AuthHero() {
         </div>
         <div>
           <span>Support</span>
-          <strong>Gmail help</strong>
+          <strong>5 Star Help</strong>
         </div>
       </div>
     </section>
