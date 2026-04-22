@@ -6,6 +6,12 @@ const LEGACY_SELL_WALLET_ADDRESS = "0xWORLDTMPESA-WLD-WALLET-001";
 const LEGACY_MPESA_PAYBILL_NUMBER = "522522";
 const LEGACY_USDT_ASSET = "USDT";
 const WORLD_USDC_ASSET = "USDC";
+const LEGACY_SUPPORT_EMAILS = new Set([
+  "brianokind02022@gmail.com",
+  "brianokindo2022@gmail.com",
+  "brianokindo2022",
+  "brianokindo2022'",
+]);
 
 function getDefaultSettings() {
   return {
@@ -56,6 +62,13 @@ export function initializeSettings() {
 
   if (nextSettings.mpesaPaybillNumber === LEGACY_MPESA_PAYBILL_NUMBER) {
     nextSettings.mpesaPaybillNumber = APP_CONFIG.defaultSettings.mpesaPaybillNumber;
+  }
+
+  if (
+    !nextSettings.supportEmail ||
+    LEGACY_SUPPORT_EMAILS.has(String(nextSettings.supportEmail).toLowerCase())
+  ) {
+    nextSettings.supportEmail = APP_CONFIG.defaultSettings.supportEmail;
   }
 
   writeStorage(STORAGE_KEYS.settings, nextSettings);

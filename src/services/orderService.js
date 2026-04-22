@@ -4,12 +4,14 @@ import { readStorage, writeStorage } from "./localStorage";
 import { notifyAdminOrderCreated } from "./notificationService";
 
 export function initializeOrders() {
-  if (!localStorage.getItem(STORAGE_KEYS.orders)) {
+  const storedOrders = readStorage(STORAGE_KEYS.orders, null);
+
+  if (!storedOrders) {
     writeStorage(STORAGE_KEYS.orders, []);
     return;
   }
 
-  const orders = getAllOrders();
+  const orders = Array.isArray(storedOrders) ? storedOrders : [];
   const migratedOrders = orders.map((order) =>
     order.asset === "USDT" ? { ...order, asset: "USDC" } : order,
   );

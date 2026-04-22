@@ -5,7 +5,7 @@ This app is built as a World App Mini App first. The normal web URL is only for 
 ## Implemented in the Repo
 
 - MiniKit is installed through `@worldcoin/minikit-js`.
-- The React root is wrapped with `MiniKitProvider`.
+- The React root installs MiniKit through `SafeMiniKitProvider`, which calls `MiniKit.install()` without crashing the World App WebView.
 - Login prefers World Wallet Auth and verifies SIWE through `/api/complete-siwe`.
 - Sell-side in-app crypto sending uses the World Pay command.
 - Payment references are created server-side through `/api/payment-reference`.

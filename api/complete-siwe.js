@@ -1,4 +1,3 @@
-import { verifySiweMessage } from "@worldcoin/minikit-js";
 import { parseCookies, serializeCookie } from "./_lib/cookies.js";
 import { allowMethods, readJsonBody, sendJson } from "./_lib/http.js";
 import { isValidSignedServerNonce } from "./_lib/world.js";
@@ -31,6 +30,7 @@ export default async function handler(req, res) {
       return;
     }
 
+    const { verifySiweMessage } = await import("@worldcoin/minikit-js");
     const verification = await verifySiweMessage(payload, nonce);
     const verifiedAddress = verification.siweMessageData?.address || payload.address;
 

@@ -12,9 +12,30 @@ function buildGmailComposeUrl({ subject, body }) {
   return `https://mail.google.com/mail/?${params.toString()}`;
 }
 
+function buildMailToUrl({ subject, body }) {
+  const params = new URLSearchParams({
+    subject,
+    body,
+  });
+
+  return `mailto:${encodeURIComponent(getSettings().supportEmail)}?${params.toString()}`;
+}
+
 export function openSupportEmail({ subject, body }) {
+  const mailToUrl = buildMailToUrl({ subject, body });
   const gmailUrl = buildGmailComposeUrl({ subject, body });
-  window.location.assign(gmailUrl);
+
+  const link = document.createElement("a");
+  link.href = mailToUrl;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  window.setTimeout(() => {
+    window.location.href = gmailUrl;
+  }, 700);
 }
 
 export function openOrderSupportEmail(order, mode = "support") {
