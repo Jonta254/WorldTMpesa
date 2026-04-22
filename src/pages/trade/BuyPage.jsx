@@ -1,6 +1,6 @@
 import { useAppSettings } from "../../hooks/useAppSettings";
 import { useOrderFlow } from "../../hooks/useOrderFlow";
-import { getCurrentUser, openSupportEmail } from "../../services";
+import { getCurrentUser, openSupportEmail, openWorldReportPage } from "../../services";
 
 function BuyPage() {
   const settings = useAppSettings();
@@ -165,7 +165,9 @@ function BuyPage() {
         </div>
         <div className="support-card">
           <strong>Need help?</strong>
-          <p className="muted">Open Gmail support for buy questions or delayed crypto delivery.</p>
+          <p className="muted">
+            Open Gmail support for buy questions, or visit World.org for World App/account help.
+          </p>
           <button
             type="button"
             className="button-secondary"
@@ -189,6 +191,9 @@ function BuyPage() {
             }
           >
             Payment Delay
+          </button>
+          <button type="button" className="button-ghost" onClick={openWorldReportPage}>
+            Open World.org
           </button>
         </div>
       </aside>

@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import OrderCard from "../../components/orders/OrderCard";
-import { getCurrentUser, getOrdersForCurrentUser, openOrderSupportEmail, updateOrder } from "../../services";
+import {
+  getCurrentUser,
+  getOrdersForCurrentUser,
+  openOrderSupportEmail,
+  openWorldReportPage,
+  updateOrder,
+} from "../../services";
 
 function OrdersPage() {
   const [orders, setOrders] = useState(getOrdersForCurrentUser());
@@ -81,6 +87,9 @@ function OrdersPage() {
                   onClick={() => openOrderSupportEmail(order, "delay")}
                 >
                   Payment Delay
+                </button>
+                <button type="button" className="button-ghost" onClick={openWorldReportPage}>
+                  World Help
                 </button>
               </div>
             </OrderCard>

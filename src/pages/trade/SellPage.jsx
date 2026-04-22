@@ -5,6 +5,7 @@ import {
   canUseWorldPay,
   getWorldAppContext,
   openSupportEmail,
+  openWorldReportPage,
   requestWorldPayment,
   updateOrder,
 } from "../../services";
@@ -227,7 +228,9 @@ function SellPage() {
         </div>
         <div className="support-card">
           <strong>Need help?</strong>
-          <p className="muted">Open Gmail support for sell questions or delayed payout help.</p>
+          <p className="muted">
+            Open Gmail support for sell questions, or visit World.org for World App/account help.
+          </p>
           <button
             type="button"
             className="button-secondary"
@@ -251,6 +254,9 @@ function SellPage() {
             }
           >
             Payment Delay
+          </button>
+          <button type="button" className="button-ghost" onClick={openWorldReportPage}>
+            Open World.org
           </button>
         </div>
       </aside>
