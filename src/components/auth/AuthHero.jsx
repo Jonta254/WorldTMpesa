@@ -10,10 +10,11 @@ function AuthHero() {
         <span className="live-badge">Live rates</span>
       </div>
       <div>
-        <h1 className="brand-title">Exchange WLD, USDC and KES with M-Pesa settlement.</h1>
+        <h1 className="brand-title">Buy or sell WLD and USDC with KES settlement.</h1>
         <p className="brand-copy">
-          View the current exchange rate, place a sell or buy order, then complete payment through
-          World App or M-Pesa. Every order is manually reviewed before completion.
+          Sell from your World wallet to receive KES on M-Pesa, or deposit KES by M-Pesa so the
+          admin can deliver WLD or USDC to your World account. Every order is manually reviewed
+          before completion.
         </p>
       </div>
 
@@ -32,13 +33,13 @@ function AuthHero() {
 
       <div className="fee-note">
         <div>
-          <strong>Fees excluded from the displayed rate</strong>
+          <strong>Displayed rates exclude fees</strong>
           <p>
-            Final settlement may vary by amount because M-Pesa charges, network fees, or admin
-            adjustments are handled during manual confirmation.
+            Like a P2P exchange, the shown rate is the base rate only. M-Pesa charges, network
+            fees, and amount-based adjustments are confirmed before final settlement.
           </p>
         </div>
-        <span>Manual review</span>
+        <span>Fee excluded</span>
       </div>
 
       <div className="trust-grid">

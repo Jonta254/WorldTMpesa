@@ -11,6 +11,14 @@ export default async function handler(req, res) {
     const { payload, nonce } = await readJsonBody(req);
     const cookies = parseCookies(req);
 
+    if (payload?.status !== "success" || !payload?.signature || !payload?.message) {
+      sendJson(res, 400, {
+        isValid: false,
+        error: "World wallet authentication was not completed.",
+      });
+      return;
+    }
+
     if (!nonce || nonce !== cookies.tmpesa_siwe) {
       sendJson(res, 400, {
         isValid: false,
@@ -20,6 +28,8 @@ export default async function handler(req, res) {
     }
 
     const verification = await verifySiweMessage(payload, nonce);
+    const verifiedAddress = verification.siweMessageData?.address || payload.address;
+
     res.setHeader(
       "Set-Cookie",
       serializeCookie("tmpesa_siwe", "", {
@@ -29,8 +39,8 @@ export default async function handler(req, res) {
     );
 
     sendJson(res, 200, {
-      isValid: verification.isValid,
-      address: verification.siweMessageData.address,
+      isValid: Boolean(verification.isValid && verifiedAddress),
+      address: verifiedAddress,
       nonce,
     });
   } catch (error) {

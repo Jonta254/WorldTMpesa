@@ -48,8 +48,8 @@ function AppShell() {
         </header>
 
         <div className="context-strip">
-          <span>{worldApp.isInstalled ? "Opened in World App" : "Browser preview mode"}</span>
-          <span>{user?.username ? `@${user.username}` : user?.phone || "Local prototype session"}</span>
+          <span>{worldApp.isInstalled ? "Opened in World App" : "Open in World App for wallet payments"}</span>
+          <span>{user?.username ? `@${user.username}` : user?.phone || "TMpesa session"}</span>
           {!worldApp.isInstalled && settings.worldAppId ? (
             <a href={worldAppLink} className="text-link">
               Open in World App

@@ -39,8 +39,8 @@ function SignupPage() {
             <span className="brand-kicker">Get started</span>
             <h2>Create your account</h2>
             <p className="muted">
-              This signup is only for browser preview mode. Inside World App, wallet auth is the
-              preferred entry flow.
+              For normal users, open TMpesa inside World App and continue with wallet
+              authentication. This form is only for manual admin-created local accounts.
             </p>
           </div>
 

@@ -2,7 +2,7 @@ async function readJsonResponse(response) {
   const payload = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    throw new Error(payload?.error || payload?.message || "Backend request failed.");
+    throw new Error(payload?.error || payload?.message || "TMpesa could not reach the secure server. Please try again.");
   }
 
   return payload;
@@ -11,6 +11,8 @@ async function readJsonResponse(response) {
 export async function requestServerNonce() {
   const response = await fetch("/api/nonce", {
     credentials: "include",
+  }).catch(() => {
+    throw new Error("TMpesa secure login is temporarily unavailable. Please try again.");
   });
 
   return readJsonResponse(response);
@@ -24,6 +26,8 @@ export async function completeSiweVerification(payload, nonce) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ payload, nonce }),
+  }).catch(() => {
+    throw new Error("TMpesa could not verify your World wallet. Please try again.");
   });
 
   return readJsonResponse(response);
@@ -33,6 +37,8 @@ export async function createPaymentReference() {
   const response = await fetch("/api/payment-reference", {
     method: "POST",
     credentials: "include",
+  }).catch(() => {
+    throw new Error("TMpesa could not prepare the World payment. Please try again.");
   });
 
   return readJsonResponse(response);
@@ -46,6 +52,8 @@ export async function confirmWorldPayment(payload) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
+  }).catch(() => {
+    throw new Error("TMpesa could not confirm the World payment. Please try again.");
   });
 
   return readJsonResponse(response);

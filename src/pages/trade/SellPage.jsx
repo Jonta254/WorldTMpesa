@@ -150,10 +150,10 @@ function SellPage() {
               </div>
             ) : (
               <div className="highlight-box">
-                <strong>Browser preview fallback</strong>
+                <strong>Manual confirmation required</strong>
                 <p className="muted">
-                  World Pay only opens inside World App. For browser testing, send manually and
-                  paste the blockchain transaction hash.
+                  Open TMpesa inside World App for direct wallet payment. If the World Pay sheet is
+                  unavailable, send manually and submit the blockchain transaction hash.
                 </p>
                 <code>Receiver: {settings.sellWalletAddress}</code>
               </div>

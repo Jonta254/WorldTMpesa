@@ -112,6 +112,25 @@ button {
   gap: 14px;
 }
 
+.admin-access-panel {
+  display: grid;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(148, 163, 184, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.admin-access-panel summary {
+  cursor: pointer;
+  color: #dbe5ff;
+  font-weight: 700;
+}
+
+.admin-access-panel[open] summary {
+  margin-bottom: 14px;
+}
+
 .field {
   display: grid;
   gap: 8px;
