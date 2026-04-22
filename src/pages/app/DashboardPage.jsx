@@ -12,6 +12,22 @@ import {
 } from "../../services";
 import { useExchangeRates } from "../../hooks/useExchangeRate";
 
+function formatLaunchSource(location) {
+  if (!location) {
+    return "Browser";
+  }
+
+  if (typeof location === "string") {
+    return location;
+  }
+
+  if (typeof location === "object") {
+    return location.open_origin || location.source || "World App";
+  }
+
+  return "World App";
+}
+
 function DashboardPage() {
   const initialUser = getCurrentUser();
   const [user, setUser] = useState(initialUser);
@@ -26,6 +42,7 @@ function DashboardPage() {
   const pendingOrders = orders.filter((order) => order.status === "pending").length;
   const paidOrders = orders.filter((order) => order.status === "paid").length;
   const completedOrders = orders.filter((order) => order.status === "completed").length;
+  const launchSource = formatLaunchSource(worldApp.location);
 
   const handleProfileSave = () => {
     setProfileError("");
@@ -119,7 +136,7 @@ function DashboardPage() {
               </div>
               <div className="mini-stat">
                 Launch
-                <strong>{worldApp.location || "browser"}</strong>
+                <strong>{launchSource}</strong>
               </div>
             </div>
           </div>
