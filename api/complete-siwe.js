@@ -1,6 +1,7 @@
-import { verifySiweMessage } from "@worldcoin/minikit-js/siwe";
+import { verifySiweMessage } from "@worldcoin/minikit-js";
 import { parseCookies, serializeCookie } from "./_lib/cookies.js";
 import { allowMethods, readJsonBody, sendJson } from "./_lib/http.js";
+import { isValidSignedServerNonce } from "./_lib/world.js";
 
 export default async function handler(req, res) {
   if (!allowMethods(req, res, ["POST"])) {
@@ -8,7 +9,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { payload, nonce } = await readJsonBody(req);
+    const { payload, nonce, nonceSignature } = await readJsonBody(req);
     const cookies = parseCookies(req);
 
     if (payload?.status !== "success" || !payload?.signature || !payload?.message) {
@@ -19,10 +20,13 @@ export default async function handler(req, res) {
       return;
     }
 
-    if (!nonce || nonce !== cookies.tmpesa_siwe) {
+    const cookieMatches = nonce && nonce === cookies.tmpesa_siwe;
+    const signedNonceMatches = isValidSignedServerNonce(nonce, nonceSignature);
+
+    if (!cookieMatches && !signedNonceMatches) {
       sendJson(res, 400, {
         isValid: false,
-        error: "Invalid nonce.",
+        error: "World wallet session expired. Please try again.",
       });
       return;
     }

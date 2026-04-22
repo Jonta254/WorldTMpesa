@@ -18,14 +18,14 @@ export async function requestServerNonce() {
   return readJsonResponse(response);
 }
 
-export async function completeSiweVerification(payload, nonce) {
+export async function completeSiweVerification(payload, nonce, nonceSignature) {
   const response = await fetch("/api/complete-siwe", {
     method: "POST",
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ payload, nonce }),
+    body: JSON.stringify({ payload, nonce, nonceSignature }),
   }).catch(() => {
     throw new Error("TMpesa could not verify your World wallet. Please try again.");
   });

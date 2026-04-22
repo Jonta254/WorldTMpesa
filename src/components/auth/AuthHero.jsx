@@ -53,7 +53,13 @@ function AuthHero() {
         </div>
         <div>
           <span>Support</span>
-          <strong>5 Star Help</strong>
+          <strong className="star-rating" aria-label="5 star support">
+            <span className="star-shape" aria-hidden="true" />
+            <span className="star-shape" aria-hidden="true" />
+            <span className="star-shape" aria-hidden="true" />
+            <span className="star-shape" aria-hidden="true" />
+            <span className="star-shape" aria-hidden="true" />
+          </strong>
         </div>
       </div>
     </section>

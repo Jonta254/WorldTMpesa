@@ -12,7 +12,8 @@ export default async function handler(req, res) {
     "Set-Cookie",
     serializeCookie("tmpesa_payment_reference", reference, {
       maxAge: 60 * 10,
-      secure: process.env.NODE_ENV === "production",
+      sameSite: "None",
+      secure: true,
     }),
   );
 

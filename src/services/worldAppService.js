@@ -74,14 +74,16 @@ export async function connectWithWorldAppWallet() {
     throw new Error("Open this app inside World App to continue with wallet authentication.");
   }
 
-  const { nonce } = await requestServerNonce();
+  const { nonce, nonceSignature } = await requestServerNonce();
   const { finalPayload } = await runMiniKitCommand("walletAuth", {
     nonce,
+    requestId: "tmpesa-wallet-auth",
     statement: "Sign in to TMpesa inside World App",
     expirationTime: new Date(Date.now() + 1000 * 60 * 10),
+    notBefore: new Date(Date.now() - 1000 * 60),
   });
 
-  const verification = await completeSiweVerification(finalPayload, nonce);
+  const verification = await completeSiweVerification(finalPayload, nonce, nonceSignature);
 
   if (!verification.isValid) {
     throw new Error("Wallet authentication could not be verified by the backend.");
