@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import AuthHero from "../../components/auth/AuthHero";
 import { useAppSettings } from "../../hooks/useAppSettings";
@@ -14,7 +14,7 @@ function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const settings = useAppSettings();
-  const worldApp = useMemo(() => getWorldAppContext(), []);
+  const worldApp = getWorldAppContext();
   const worldAppLink = buildWorldAppDeeplink(location.state?.from?.pathname || "/");
   const [form, setForm] = useState({ phone: "", password: "" });
   const [error, setError] = useState("");
