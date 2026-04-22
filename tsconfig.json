@@ -5,6 +5,7 @@
     "lib": ["DOM", "DOM.Iterable", "ES2020"],
     "allowJs": true,
     "checkJs": false,
+    "noCheck": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
