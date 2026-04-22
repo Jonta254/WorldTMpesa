@@ -1,7 +1,5 @@
 import { getSettings } from "./settingsService";
 
-const WORLD_REPORT_URL = "https://world.org";
-
 function buildGmailComposeUrl({ subject, body }) {
   const params = new URLSearchParams({
     view: "cm",
@@ -17,10 +15,6 @@ function buildGmailComposeUrl({ subject, body }) {
 export function openSupportEmail({ subject, body }) {
   const gmailUrl = buildGmailComposeUrl({ subject, body });
   window.location.assign(gmailUrl);
-}
-
-export function openWorldReportPage() {
-  window.open(WORLD_REPORT_URL, "_blank", "noopener,noreferrer");
 }
 
 export function openOrderSupportEmail(order, mode = "support") {

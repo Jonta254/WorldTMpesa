@@ -5,7 +5,6 @@ import {
   getCurrentUser,
   getOrdersForCurrentUser,
   openOrderSupportEmail,
-  openWorldReportPage,
   updateOrder,
 } from "../../services";
 
@@ -87,9 +86,6 @@ function OrdersPage() {
                   onClick={() => openOrderSupportEmail(order, "delay")}
                 >
                   Payment Delay
-                </button>
-                <button type="button" className="button-ghost" onClick={openWorldReportPage}>
-                  World Help
                 </button>
               </div>
             </OrderCard>

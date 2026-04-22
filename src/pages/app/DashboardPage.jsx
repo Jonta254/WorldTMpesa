@@ -8,7 +8,6 @@ import {
   getOrdersForCurrentUser,
   getWorldAppContext,
   openSupportEmail,
-  openWorldReportPage,
   updateCurrentUserProfile,
 } from "../../services";
 import { useExchangeRates } from "../../hooks/useExchangeRate";
@@ -154,25 +153,20 @@ function DashboardPage() {
       <section className="support-footer">
         <div>
           <strong>Support</strong>
-          <p>Questions, delayed payment, or World account issues? Use TMpesa support or open World.org.</p>
+          <p>Questions or delayed payment? Contact TMpesa support by email.</p>
         </div>
-        <div className="button-row compact-actions">
-          <button
-            type="button"
-            className="button-secondary"
-            onClick={() =>
-              openSupportEmail({
-                subject: "TMpesa support",
-                body: "Hello TMpesa team,\n\nI need help with my account or order.",
-              })
-            }
-          >
-            Email Support
-          </button>
-          <button type="button" className="button-ghost" onClick={openWorldReportPage}>
-            Open World.org
-          </button>
-        </div>
+        <button
+          type="button"
+          className="button-secondary"
+          onClick={() =>
+            openSupportEmail({
+              subject: "TMpesa support",
+              body: "Hello TMpesa team,\n\nI need help with my account or order.",
+            })
+          }
+        >
+          Email Support
+        </button>
       </section>
     </div>
   );
