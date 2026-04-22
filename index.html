@@ -11,9 +11,61 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="manifest" href="/site.webmanifest" />
     <title>TMpesa | WLD and M-Pesa Exchange</title>
+    <style>
+      body {
+        margin: 0;
+        background: #0b0f1a;
+        color: #f5f7ff;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .boot-fallback {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+
+      .boot-card {
+        width: min(100%, 440px);
+        display: grid;
+        gap: 14px;
+        padding: 24px;
+        border-radius: 24px;
+        background: rgba(17, 24, 39, 0.94);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+      }
+
+      .boot-pill {
+        width: fit-content;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(79, 124, 255, 0.16);
+        color: #c9d7ff;
+      }
+
+      .boot-card h1 {
+        margin: 0;
+        font-size: 2rem;
+        line-height: 1.1;
+      }
+
+      .boot-card p {
+        margin: 0;
+        color: #97a3bf;
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="boot-fallback">
+        <div class="boot-card">
+          <span class="boot-pill">TMpesa</span>
+          <h1>Loading World App session</h1>
+          <p>If this stays here, close TMpesa and open it again from World App.</p>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
   </html>
