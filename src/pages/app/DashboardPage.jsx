@@ -43,6 +43,7 @@ function DashboardPage() {
   const paidOrders = orders.filter((order) => order.status === "paid").length;
   const completedOrders = orders.filter((order) => order.status === "completed").length;
   const launchSource = formatLaunchSource(worldApp.location);
+  const hasWorldSession = user?.authMethod === "world-app" || Boolean(user?.username);
 
   const handleProfileSave = () => {
     setProfileError("");
@@ -90,7 +91,7 @@ function DashboardPage() {
       <section className="hero-card">
         <div className="hero-grid">
           <div className="stack">
-            <span className="brand-kicker">Inside World App</span>
+            <span className="brand-kicker">{hasWorldSession ? "World account active" : "Inside World App"}</span>
             <div>
               <h2 className="brand-title">{APP_CONFIG.appName} exchange desk.</h2>
               <p className="brand-copy">
@@ -112,7 +113,7 @@ function DashboardPage() {
                 <code>{user?.mpesaPhoneNumber || "Not added yet"}</code>
               </div>
             </div>
-            {!worldApp.isInstalled && worldAppLink ? (
+            {!hasWorldSession && !worldApp.isInstalled && worldAppLink ? (
               <a href={worldAppLink} className="button-secondary">
                 Open in World App
               </a>
@@ -139,6 +140,44 @@ function DashboardPage() {
                 <strong>{launchSource}</strong>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="gold-guide-card">
+        <div className="gold-guide-head">
+          <span className="gold-guide-badge">User guide</span>
+          <span className="gold-guide-accent">Smooth steps</span>
+        </div>
+        <h3>Your TMpesa flow in brief</h3>
+        <div className="gold-guide-list">
+          <div>
+            <strong>1. Keep your payout number ready</strong>
+            <p>
+              Add the M-Pesa number you want to receive KES on. TMpesa keeps it attached to your
+              account for sell orders.
+            </p>
+          </div>
+          <div>
+            <strong>2. Sell from your World account</strong>
+            <p>
+              Enter the amount, confirm the order, then send WLD or USDC. Your World username stays
+              linked to the order for review.
+            </p>
+          </div>
+          <div>
+            <strong>3. Buy with M-Pesa when needed</strong>
+            <p>
+              Enter the amount you want to buy, pay the shown till number, then mark the order as
+              paid so the admin can complete delivery.
+            </p>
+          </div>
+          <div>
+            <strong>4. Track everything in Orders</strong>
+            <p>
+              Watch your status move from pending to paid to completed, and contact support if a
+              settlement takes longer than expected.
+            </p>
           </div>
         </div>
       </section>

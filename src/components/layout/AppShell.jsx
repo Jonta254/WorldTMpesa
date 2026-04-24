@@ -23,6 +23,7 @@ function AppShell() {
   const settings = useAppSettings();
   const insets = worldApp.deviceProperties?.safeAreaInsets;
   const worldAppLink = buildWorldAppDeeplink(location.pathname);
+  const hasWorldSession = user?.authMethod === "world-app" || Boolean(user?.username);
 
   const handleLogout = () => {
     logoutUser();
@@ -48,9 +49,15 @@ function AppShell() {
         </header>
 
         <div className="context-strip">
-          <span>{worldApp.isInstalled ? "Opened in World App" : "Open in World App for wallet payments"}</span>
+          <span>
+            {hasWorldSession
+              ? "World account connected"
+              : worldApp.isInstalled
+                ? "Opened in World App"
+                : "Open in World App for wallet payments"}
+          </span>
           <span>{user?.username ? `@${user.username}` : user?.phone || "TMpesa session"}</span>
-          {!worldApp.isInstalled && settings.worldAppId ? (
+          {!hasWorldSession && !worldApp.isInstalled && settings.worldAppId ? (
             <a href={worldAppLink} className="text-link">
               Open in World App
             </a>

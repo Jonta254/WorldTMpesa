@@ -600,6 +600,74 @@ button:disabled {
   margin: 4px 0 0;
 }
 
+.gold-guide-card {
+  display: grid;
+  gap: 14px;
+  padding: 22px 20px;
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(53, 40, 14, 0.9), rgba(18, 15, 10, 0.96)),
+    radial-gradient(circle at top right, rgba(251, 191, 36, 0.16), transparent 40%);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.22);
+}
+
+.gold-guide-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.gold-guide-badge,
+.gold-guide-accent {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.gold-guide-badge {
+  background: rgba(251, 191, 36, 0.14);
+  color: #ffe59a;
+}
+
+.gold-guide-accent {
+  background: rgba(255, 255, 255, 0.04);
+  color: #f5d27a;
+}
+
+.gold-guide-card h3 {
+  margin: 0;
+  color: #fff6d9;
+  font-size: 1.6rem;
+}
+
+.gold-guide-list {
+  display: grid;
+  gap: 12px;
+}
+
+.gold-guide-list div {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(255, 248, 220, 0.04);
+  border: 1px solid rgba(251, 191, 36, 0.12);
+}
+
+.gold-guide-list strong {
+  display: block;
+  color: #ffe8a3;
+}
+
+.gold-guide-list p {
+  margin: 6px 0 0;
+  color: #f3ead2;
+}
+
 .support-footer {
   grid-template-columns: 1fr;
 }
