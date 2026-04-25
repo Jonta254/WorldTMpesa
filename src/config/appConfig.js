@@ -1,7 +1,11 @@
+const FALLBACK_WORLD_APP_ID = "app_02bd6decc052fc1dfa29487444f6c6f";
+const RESOLVED_WORLD_APP_ID =
+  (import.meta.env.VITE_WORLD_APP_ID || "").trim() || FALLBACK_WORLD_APP_ID;
+
 export const APP_CONFIG = {
   appName: "TMpesa",
   repoName: "WorldTMpesa",
-  worldAppId: "app_02bd6decc052fc1dfa29487444f6c6f",
+  worldAppId: RESOLVED_WORLD_APP_ID,
   firstAccessVerificationAction: "high-value-order-check",
   highValueOrderAction: "high-value-order-check",
   highValueOrderKesThreshold: 10000,
@@ -14,7 +18,7 @@ export const APP_CONFIG = {
     mpesaPaybillNumber: "5698981",
     mpesaTillName: "TMpesa Exchange",
     supportEmail: "brianokindo@gmail.com",
-    worldAppId: import.meta.env.VITE_WORLD_APP_ID || "app_02bd6decc052fc1dfa29487444f6c6f",
+    worldAppId: RESOLVED_WORLD_APP_ID,
   },
   supportedAssets: ["WLD", "USDC"],
   worldPaySupportedAssets: ["WLD", "USDC"],

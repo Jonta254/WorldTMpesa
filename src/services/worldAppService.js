@@ -116,7 +116,7 @@ export function canUseWorldPay(asset) {
 }
 
 export function buildWorldAppDeeplink(path = "/") {
-  const appId = getSettings().worldAppId;
+  const appId = getSettings().worldAppId || APP_CONFIG.worldAppId;
 
   if (!appId) {
     return "";

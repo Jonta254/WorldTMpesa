@@ -12,11 +12,18 @@ const LEGACY_SUPPORT_EMAILS = new Set([
   "brianokindo2022",
   "brianokindo2022'",
 ]);
+const WORLD_APP_ID_PATTERN = /^app_[a-zA-Z0-9]+$/;
+
+function resolveWorldAppId(candidate) {
+  const appId = String(candidate || "").trim();
+  return WORLD_APP_ID_PATTERN.test(appId) ? appId : APP_CONFIG.worldAppId;
+}
 
 function getDefaultSettings() {
   return {
     ...APP_CONFIG.defaultSettings,
     ratesKes: { ...APP_CONFIG.defaultSettings.ratesKes },
+    worldAppId: APP_CONFIG.worldAppId,
   };
 }
 
@@ -71,6 +78,8 @@ export function initializeSettings() {
     nextSettings.supportEmail = APP_CONFIG.defaultSettings.supportEmail;
   }
 
+  nextSettings.worldAppId = resolveWorldAppId(nextSettings.worldAppId);
+
   writeStorage(STORAGE_KEYS.settings, nextSettings);
 }
 
@@ -121,7 +130,7 @@ export function updateOperationalSettings(nextSettings) {
   const mpesaPaybillNumber = (nextSettings.mpesaPaybillNumber || "").trim();
   const mpesaTillName = (nextSettings.mpesaTillName || "").trim();
   const supportEmail = (nextSettings.supportEmail || "").trim();
-  const worldAppId = (nextSettings.worldAppId || "").trim();
+  const worldAppId = resolveWorldAppId(nextSettings.worldAppId);
 
   if (!sellWalletAddress) {
     throw new Error("Enter the wallet address that should receive sell-side WLD payments.");
