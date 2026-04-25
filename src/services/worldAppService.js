@@ -7,7 +7,6 @@ import {
   requestServerNonce,
   verifyHighValueOrder,
 } from "./backendService";
-import { getSettings } from "./settingsService";
 
 const TOKEN_DECIMALS = {
   WLD: 18,
@@ -118,7 +117,7 @@ export function canUseWorldPay(asset) {
 }
 
 export function buildWorldAppDeeplink(path = "/") {
-  const appId = getSettings().worldAppId || APP_CONFIG.worldAppId;
+  const appId = APP_CONFIG.worldAppId;
 
   if (!appId) {
     return "";
