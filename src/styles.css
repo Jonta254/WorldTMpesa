@@ -178,6 +178,78 @@ button {
   font-size: 1.05rem;
 }
 
+.secure-access-card {
+  display: grid;
+  gap: 14px;
+  padding: 18px 16px;
+  border-radius: 22px;
+  background:
+    linear-gradient(145deg, rgba(38, 30, 10, 0.9), rgba(16, 18, 30, 0.96)),
+    radial-gradient(circle at top right, rgba(251, 191, 36, 0.18), transparent 42%);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+}
+
+.secure-access-card h3 {
+  margin: 0;
+  color: #fff3cd;
+}
+
+.secure-access-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.secure-access-badge,
+.secure-access-trust {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.secure-access-badge {
+  background: rgba(251, 191, 36, 0.14);
+  color: #ffe59a;
+}
+
+.secure-access-trust {
+  background: rgba(255, 255, 255, 0.05);
+  color: #f9df8e;
+}
+
+.secure-step-list {
+  display: grid;
+  gap: 10px;
+}
+
+.secure-step-list div {
+  padding: 13px 14px;
+  border-radius: 18px;
+  background: rgba(255, 248, 220, 0.04);
+  border: 1px solid rgba(251, 191, 36, 0.1);
+}
+
+.secure-step-list div.active {
+  background: rgba(251, 191, 36, 0.12);
+  border-color: rgba(251, 191, 36, 0.22);
+}
+
+.secure-step-list strong {
+  display: block;
+  color: #ffe8a3;
+}
+
+.secure-step-list p {
+  margin: 5px 0 0;
+  color: #f3ead2;
+}
+
 .brand-kicker {
   display: inline-flex;
   align-items: center;

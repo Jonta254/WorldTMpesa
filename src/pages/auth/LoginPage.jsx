@@ -23,6 +23,7 @@ function LoginPage() {
   const [error, setError] = useState("");
   const [worldLoading, setWorldLoading] = useState(false);
   const [authStatus, setAuthStatus] = useState("");
+  const [authStage, setAuthStage] = useState("idle");
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -44,33 +45,45 @@ function LoginPage() {
   const handleWorldAppLogin = async () => {
     setError("");
     setWorldLoading(true);
+    setAuthStage("wallet");
     setAuthStatus("Connecting your World wallet...");
 
     try {
       const profile = await connectWithWorldAppWallet();
       const existingUser = findUserByWalletAddress(profile.walletAddress);
+      const isFirstAccess = !isUserAccessVerified(existingUser);
 
-      if (!isUserAccessVerified(existingUser)) {
-        setAuthStatus("Completing your one-time human check...");
-        const verification = await requestWorldVerification({
-          action: APP_CONFIG.firstAccessVerificationAction,
-          signal: `first-access:${profile.walletAddress.toLowerCase()}`,
-          verificationLevel: "device",
-        });
+      setAuthStage("verify");
+      setAuthStatus(
+        isFirstAccess
+          ? "Completing your first TMpesa human verification..."
+          : "Running secure TMpesa access verification...",
+      );
+      const verification = await requestWorldVerification({
+        action: APP_CONFIG.firstAccessVerificationAction,
+        signal: isFirstAccess
+          ? `first-access:${profile.walletAddress.toLowerCase()}`
+          : `login-access:${profile.walletAddress.toLowerCase()}:${Date.now()}`,
+        verificationLevel: "device",
+      });
 
-        loginWithWorldApp(profile, {
-          firstAccessVerified: true,
-          firstAccessVerifiedAt: new Date().toISOString(),
-          firstAccessVerificationLevel: verification.verificationLevel,
-        });
-      } else {
-        loginWithWorldApp(profile);
-      }
+      setAuthStage("unlock");
+      setAuthStatus("Unlocking your secure TMpesa session...");
+      loginWithWorldApp(profile, {
+        firstAccessVerified: true,
+        firstAccessVerifiedAt:
+          existingUser?.firstAccessVerifiedAt || new Date().toISOString(),
+        firstAccessVerificationLevel:
+          existingUser?.firstAccessVerificationLevel || verification.verificationLevel,
+        lastLoginVerificationAt: new Date().toISOString(),
+        lastLoginVerificationLevel: verification.verificationLevel,
+      });
 
       navigate(location.state?.from?.pathname || "/");
     } catch (err) {
       setError(err.message);
     } finally {
+      setAuthStage("idle");
       setAuthStatus("");
       setWorldLoading(false);
     }
@@ -87,8 +100,8 @@ function LoginPage() {
             <div className="auth-splash-copy">
               <h2>TMpesa</h2>
               <p className="muted">
-                Connect your World account, complete the required first-time human check, then use
-                TMpesa to buy WLD or USDC with M-Pesa or sell and receive KES settlement.
+                Sign in with your World wallet and complete the secure TMpesa access check before
+                you buy WLD or USDC with M-Pesa or sell and receive KES settlement.
               </p>
             </div>
           </div>
@@ -96,11 +109,37 @@ function LoginPage() {
           {error ? <div className="error">{error}</div> : null}
           {location.state?.requiresVerification ? (
             <div className="notice">
-              Your World session is connected, but TMpesa needs a one-time human check before first
-              access.
+              Your World session is connected, but TMpesa still needs the secure access check to
+              finish login.
             </div>
           ) : null}
           {authStatus ? <div className="notice">{authStatus}</div> : null}
+
+          <div className="secure-access-card">
+            <div className="secure-access-head">
+              <span className="secure-access-badge">Secure access</span>
+              <span className="secure-access-trust">World login protected</span>
+            </div>
+            <h3>Login with Wallet Auth and World verification</h3>
+            <p className="muted">
+              TMpesa uses Wallet Auth as the primary sign-in, then finishes login with a World human
+              check before your session opens.
+            </p>
+            <div className="secure-step-list">
+              <div className={authStage === "wallet" ? "active" : ""}>
+                <strong>1. Wallet Auth</strong>
+                <p>Confirm your World wallet and username.</p>
+              </div>
+              <div className={authStage === "verify" ? "active" : ""}>
+                <strong>2. Human verification</strong>
+                <p>Complete the World access check at login.</p>
+              </div>
+              <div className={authStage === "unlock" ? "active" : ""}>
+                <strong>3. Session unlock</strong>
+                <p>TMpesa opens after the secure check succeeds.</p>
+              </div>
+            </div>
+          </div>
 
           <div className="stack auth-cta-block">
             <button
@@ -109,11 +148,11 @@ function LoginPage() {
               onClick={handleWorldAppLogin}
               disabled={!worldApp.isInstalled || worldLoading}
             >
-              {worldLoading ? "Connecting wallet..." : "Connect Wallet"}
+              {worldLoading ? "Securing login..." : "Continue with World App"}
             </button>
             <div className="notice">
               {worldApp.isInstalled
-                ? "World App detected. Wallet Auth is first, then TMpesa runs a one-time human check for first access."
+                ? "World App detected. TMpesa will run Wallet Auth first and then complete verification before login opens."
                 : "Open TMpesa inside World App to continue with wallet authentication."}
             </div>
             {!worldApp.isInstalled && settings.worldAppId ? (
@@ -134,8 +173,8 @@ function LoginPage() {
             <div>
               <span className="auth-feature-icon auth-feature-green">K</span>
               <div>
-                <strong>One-time verified access</strong>
-                <p>New users complete a World human check the first time they open TMpesa.</p>
+                <strong>Verified login gate</strong>
+                <p>World users pass through the TMpesa access check during login.</p>
               </div>
             </div>
             <div>
