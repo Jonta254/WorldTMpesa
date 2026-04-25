@@ -30,8 +30,18 @@ body,
   margin: 0;
 }
 
+html,
 body {
-  min-height: 100vh;
+  width: 100%;
+  min-height: 100dvh;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+  background: var(--bg);
+}
+
+body {
+  min-height: 100dvh;
+  overflow-x: hidden;
 }
 
 a {
@@ -46,12 +56,20 @@ textarea {
   font: inherit;
 }
 
+input,
+select,
+textarea,
+button,
+a {
+  touch-action: manipulation;
+}
+
 button {
   cursor: pointer;
 }
 
 .page-bg {
-  min-height: 100vh;
+  min-height: 100dvh;
   padding: 20px 16px 120px;
 }
 
@@ -62,7 +80,7 @@ button {
 }
 
 .auth-layout {
-  min-height: calc(100vh - 40px);
+  min-height: calc(100dvh - 40px);
   display: grid;
   align-items: center;
 }
