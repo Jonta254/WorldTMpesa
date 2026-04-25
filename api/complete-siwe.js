@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     const { payload, nonce, nonceSignature } = await readJsonBody(req);
     const cookies = parseCookies(req);
 
-    if (payload?.status !== "success" || !payload?.signature || !payload?.message) {
+    if (!payload?.signature || !payload?.message) {
       sendJson(res, 400, {
         isValid: false,
         error: "World wallet authentication was not completed.",
@@ -30,7 +30,7 @@ export default async function handler(req, res) {
       return;
     }
 
-    const { verifySiweMessage } = await import("@worldcoin/minikit-js");
+    const { verifySiweMessage } = await import("@worldcoin/minikit-js/siwe");
     const verification = await verifySiweMessage(payload, nonce);
     const verifiedAddress = verification.siweMessageData?.address || payload.address;
 

@@ -6,7 +6,7 @@ export const APP_CONFIG = {
   appName: "TMpesa",
   repoName: "WorldTMpesa",
   worldAppId: RESOLVED_WORLD_APP_ID,
-  firstAccessVerificationAction: "high-value-order-check",
+  firstAccessVerificationAction: "first-access-check",
   highValueOrderAction: "high-value-order-check",
   highValueOrderKesThreshold: 10000,
   defaultSettings: {

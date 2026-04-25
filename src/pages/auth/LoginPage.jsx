@@ -5,6 +5,7 @@ import {
   APP_CONFIG,
   buildWorldAppDeeplink,
   connectWithWorldAppWallet,
+  findUserByUsername,
   getCurrentUser,
   findUserByWalletAddress,
   getWorldAppContext,
@@ -78,7 +79,8 @@ function LoginPage() {
 
     try {
       const profile = await connectWithWorldAppWallet();
-      const existingUser = findUserByWalletAddress(profile.walletAddress);
+      const existingUser =
+        findUserByWalletAddress(profile.walletAddress) || findUserByUsername(profile.username);
       const isFirstAccess = !isUserAccessVerified(existingUser);
 
       let verification = null;
