@@ -29,24 +29,24 @@ function toTokenUnits(amount, decimals) {
 }
 
 async function runMiniKitCommand(commandName, payload) {
-  const command = MiniKit.commandsAsync?.[commandName] || MiniKit[commandName];
+  const command = MiniKit[commandName] || MiniKit.commandsAsync?.[commandName];
 
   if (!command) {
     throw new Error(`World App command ${commandName} is not available in this MiniKit version.`);
   }
 
-  const result = await command.call(MiniKit.commandsAsync || MiniKit, payload);
-  const finalPayload = result?.finalPayload || result?.data || result;
+  const result = await command.call(MiniKit, payload);
+  const data = result?.data || result?.finalPayload || result;
 
-  if (finalPayload?.status === "error") {
-    throw new Error(finalPayload?.message || `World App ${commandName} command was cancelled.`);
+  if (data?.status === "error") {
+    throw new Error(data?.message || `World App ${commandName} command was cancelled.`);
   }
 
   if (result?.executedWith === "fallback") {
     throw new Error(`Complete ${commandName} inside World App.`);
   }
 
-  return { result, finalPayload };
+  return { result, data };
 }
 
 export function getWorldAppContext() {
@@ -76,7 +76,7 @@ export async function connectWithWorldAppWallet() {
   }
 
   const { nonce, nonceSignature } = await requestServerNonce();
-  const { finalPayload } = await runMiniKitCommand("walletAuth", {
+  const { data } = await runMiniKitCommand("walletAuth", {
     nonce,
     requestId: "tmpesa-wallet-auth",
     statement: "Sign in to TMpesa inside World App",
@@ -84,7 +84,7 @@ export async function connectWithWorldAppWallet() {
     notBefore: new Date(Date.now() - 1000 * 60),
   });
 
-  const verification = await completeSiweVerification(finalPayload, nonce, nonceSignature);
+  const verification = await completeSiweVerification(data, nonce, nonceSignature);
 
   if (!verification.isValid) {
     throw new Error("Wallet authentication could not be verified by the backend.");
@@ -101,8 +101,8 @@ export async function connectWithWorldAppWallet() {
   }
 
   return {
-    walletAddress: verification.address || finalPayload.address,
-    signature: finalPayload.signature,
+    walletAddress: verification.address || data.address,
+    signature: data.signature,
     nonce,
     username: resolvedUser?.username || "",
     fullName: resolvedUser?.username || "World App user",
@@ -141,7 +141,7 @@ export async function requestWorldPayment({ amount, asset = "WLD", description, 
 
   const paymentReference = (await createPaymentReference()).reference;
 
-  const { finalPayload } = await runMiniKitCommand("pay", {
+  const { data } = await runMiniKitCommand("pay", {
     reference: paymentReference,
     to: to.trim(),
     tokens: [
@@ -154,17 +154,17 @@ export async function requestWorldPayment({ amount, asset = "WLD", description, 
   });
 
   const normalizedPayload = {
-    ...finalPayload,
-    transactionId: finalPayload.transactionId || finalPayload.transaction_id,
+    ...data,
+    transactionId: data.transactionId || data.transaction_id,
   };
 
   const confirmation = await confirmWorldPayment(normalizedPayload);
 
   return {
-    chain: finalPayload.chain,
-    from: finalPayload.from,
-    reference: finalPayload.reference,
-    timestamp: finalPayload.timestamp,
+    chain: data.chain,
+    from: data.from,
+    reference: data.reference,
+    timestamp: data.timestamp,
     transactionId: normalizedPayload.transactionId,
     verified: confirmation.verified,
     transactionStatus: confirmation.transactionStatus,
@@ -186,17 +186,17 @@ export async function requestWorldVerification({
     verification_level: verificationLevel,
   };
 
-  const { finalPayload } = await runMiniKitCommand("verify", verificationPayload);
-  const verification = await verifyHighValueOrder(finalPayload, action, signal);
+  const { data } = await runMiniKitCommand("verify", verificationPayload);
+  const verification = await verifyHighValueOrder(data, action, signal);
 
   if (!verification?.success) {
     throw new Error(verification?.error || "TMpesa could not verify this order.");
   }
 
   return {
-    verificationLevel: finalPayload.verification_level || verificationLevel,
-    nullifierHash: finalPayload.nullifier_hash,
-    merkleRoot: finalPayload.merkle_root,
+    verificationLevel: data.verification_level || verificationLevel,
+    nullifierHash: data.nullifier_hash,
+    merkleRoot: data.merkle_root,
     signal,
   };
 }
