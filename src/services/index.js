@@ -1,6 +1,7 @@
 export { APP_CONFIG } from "../config/appConfig";
 export {
   findUserByWalletAddress,
+  findUserByUsername,
   getCurrentUser,
   initializeUsers,
   isUserAccessVerified,

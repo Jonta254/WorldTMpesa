@@ -29,6 +29,18 @@ export function getCurrentUser() {
   return readStorage(STORAGE_KEYS.currentUser, null);
 }
 
+export function findUserByUsername(username) {
+  if (!username?.trim()) {
+    return null;
+  }
+
+  const normalizedUsername = username.trim().replace(/^@/, "").toLowerCase();
+  return (
+    getUsers().find((user) => (user.username || "").trim().replace(/^@/, "").toLowerCase() === normalizedUsername) ||
+    null
+  );
+}
+
 export function findUserByWalletAddress(walletAddress) {
   if (!walletAddress?.trim()) {
     return null;
@@ -92,7 +104,7 @@ export function loginUser({ phone, password }) {
 
 export function loginWithWorldApp(profile, changes = {}) {
   const users = getUsers();
-  const existingUser = findUserByWalletAddress(profile.walletAddress);
+  const existingUser = findUserByWalletAddress(profile.walletAddress) || findUserByUsername(profile.username);
   const user = {
     id: existingUser?.id || crypto.randomUUID(),
     fullName: profile.fullName || profile.username || "World App user",

@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAppSettings } from "../../hooks/useAppSettings";
 import {
   APP_CONFIG,
   buildWorldAppDeeplink,
   connectWithWorldAppWallet,
+  getCurrentUser,
   findUserByWalletAddress,
   getWorldAppContext,
   isUserAccessVerified,
@@ -25,6 +26,14 @@ function LoginPage() {
   const [authStatus, setAuthStatus] = useState("");
   const [authStage, setAuthStage] = useState("idle");
 
+  useEffect(() => {
+    const currentUser = getCurrentUser();
+
+    if (currentUser && isUserAccessVerified(currentUser)) {
+      navigate(location.state?.from?.pathname || "/", { replace: true });
+    }
+  }, [location.state, navigate]);
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setForm((current) => ({ ...current, [name]: value }));
@@ -36,7 +45,7 @@ function LoginPage() {
 
     try {
       loginUser(form);
-      navigate(location.state?.from?.pathname || "/");
+      navigate(location.state?.from?.pathname || "/", { replace: true });
     } catch (err) {
       setError(err.message);
     }
@@ -79,7 +88,7 @@ function LoginPage() {
           existingUser?.firstAccessVerificationLevel || verification?.verificationLevel || "",
       });
 
-      navigate(location.state?.from?.pathname || "/");
+      navigate(location.state?.from?.pathname || "/", { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {
