@@ -25,14 +25,33 @@ function LoginPage() {
   const [worldLoading, setWorldLoading] = useState(false);
   const [authStatus, setAuthStatus] = useState("");
   const [authStage, setAuthStage] = useState("idle");
+  const targetPath = location.state?.from?.pathname || "/";
+
+  const finalizeSessionRedirect = () => {
+    const currentUser = getCurrentUser();
+
+    if (!currentUser || !isUserAccessVerified(currentUser)) {
+      throw new Error("TMpesa could not save the verified login session. Please try again.");
+    }
+
+    navigate(targetPath, { replace: true });
+
+    window.setTimeout(() => {
+      const latestUser = getCurrentUser();
+
+      if (latestUser && isUserAccessVerified(latestUser) && window.location.pathname === "/login") {
+        window.location.replace(targetPath);
+      }
+    }, 120);
+  };
 
   useEffect(() => {
     const currentUser = getCurrentUser();
 
     if (currentUser && isUserAccessVerified(currentUser)) {
-      navigate(location.state?.from?.pathname || "/", { replace: true });
+      navigate(targetPath, { replace: true });
     }
-  }, [location.state, navigate]);
+  }, [navigate, targetPath]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -45,7 +64,7 @@ function LoginPage() {
 
     try {
       loginUser(form);
-      navigate(location.state?.from?.pathname || "/", { replace: true });
+      finalizeSessionRedirect();
     } catch (err) {
       setError(err.message);
     }
@@ -88,7 +107,7 @@ function LoginPage() {
           existingUser?.firstAccessVerificationLevel || verification?.verificationLevel || "",
       });
 
-      navigate(location.state?.from?.pathname || "/", { replace: true });
+      finalizeSessionRedirect();
     } catch (err) {
       setError(err.message);
     } finally {
