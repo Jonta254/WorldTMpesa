@@ -2,11 +2,15 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAppSettings } from "../../hooks/useAppSettings";
 import {
+  APP_CONFIG,
   buildWorldAppDeeplink,
   connectWithWorldAppWallet,
+  findUserByWalletAddress,
   getWorldAppContext,
+  isUserAccessVerified,
   loginUser,
   loginWithWorldApp,
+  requestWorldVerification,
 } from "../../services";
 
 function LoginPage() {
@@ -18,6 +22,7 @@ function LoginPage() {
   const [form, setForm] = useState({ phone: "", password: "" });
   const [error, setError] = useState("");
   const [worldLoading, setWorldLoading] = useState(false);
+  const [authStatus, setAuthStatus] = useState("");
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -39,14 +44,34 @@ function LoginPage() {
   const handleWorldAppLogin = async () => {
     setError("");
     setWorldLoading(true);
+    setAuthStatus("Connecting your World wallet...");
 
     try {
       const profile = await connectWithWorldAppWallet();
-      loginWithWorldApp(profile);
+      const existingUser = findUserByWalletAddress(profile.walletAddress);
+
+      if (!isUserAccessVerified(existingUser)) {
+        setAuthStatus("Completing your one-time human check...");
+        const verification = await requestWorldVerification({
+          action: APP_CONFIG.firstAccessVerificationAction,
+          signal: `first-access:${profile.walletAddress.toLowerCase()}`,
+          verificationLevel: "device",
+        });
+
+        loginWithWorldApp(profile, {
+          firstAccessVerified: true,
+          firstAccessVerifiedAt: new Date().toISOString(),
+          firstAccessVerificationLevel: verification.verificationLevel,
+        });
+      } else {
+        loginWithWorldApp(profile);
+      }
+
       navigate(location.state?.from?.pathname || "/");
     } catch (err) {
       setError(err.message);
     } finally {
+      setAuthStatus("");
       setWorldLoading(false);
     }
   };
@@ -62,13 +87,20 @@ function LoginPage() {
             <div className="auth-splash-copy">
               <h2>TMpesa</h2>
               <p className="muted">
-                Connect your World account to buy WLD or USDC with M-Pesa, or sell and receive KES
-                settlement to your saved payout number.
+                Connect your World account, complete the required first-time human check, then use
+                TMpesa to buy WLD or USDC with M-Pesa or sell and receive KES settlement.
               </p>
             </div>
           </div>
 
           {error ? <div className="error">{error}</div> : null}
+          {location.state?.requiresVerification ? (
+            <div className="notice">
+              Your World session is connected, but TMpesa needs a one-time human check before first
+              access.
+            </div>
+          ) : null}
+          {authStatus ? <div className="notice">{authStatus}</div> : null}
 
           <div className="stack auth-cta-block">
             <button
@@ -81,7 +113,7 @@ function LoginPage() {
             </button>
             <div className="notice">
               {worldApp.isInstalled
-                ? "World App detected. Continue directly into TMpesa."
+                ? "World App detected. Wallet Auth is first, then TMpesa runs a one-time human check for first access."
                 : "Open TMpesa inside World App to continue with wallet authentication."}
             </div>
             {!worldApp.isInstalled && settings.worldAppId ? (
@@ -102,15 +134,15 @@ function LoginPage() {
             <div>
               <span className="auth-feature-icon auth-feature-green">K</span>
               <div>
-                <strong>Buy with KES, sell to M-Pesa</strong>
-                <p>Place orders quickly and track each one from pending to completion.</p>
+                <strong>One-time verified access</strong>
+                <p>New users complete a World human check the first time they open TMpesa.</p>
               </div>
             </div>
             <div>
               <span className="auth-feature-icon auth-feature-gold">S</span>
               <div>
-                <strong>Manual review for safety</strong>
-                <p>Rates are clear, settlement is reviewed, and support stays available by email.</p>
+                <strong>Safe trading flow</strong>
+                <p>Place orders quickly, keep your M-Pesa payout number saved, and track review safely.</p>
               </div>
             </div>
           </div>

@@ -29,6 +29,30 @@ export function getCurrentUser() {
   return readStorage(STORAGE_KEYS.currentUser, null);
 }
 
+export function findUserByWalletAddress(walletAddress) {
+  if (!walletAddress?.trim()) {
+    return null;
+  }
+
+  const normalizedWallet = walletAddress.trim().toLowerCase();
+  return (
+    getUsers().find((user) => (user.walletAddress || "").trim().toLowerCase() === normalizedWallet) ||
+    null
+  );
+}
+
+export function isUserAccessVerified(user) {
+  if (!user) {
+    return false;
+  }
+
+  if (user.isAdmin || user.authMethod !== "world-app") {
+    return true;
+  }
+
+  return Boolean(user.firstAccessVerified);
+}
+
 export function signupUser(payload) {
   const users = getUsers();
   const exists = users.some((user) => user.phone === payload.phone);
@@ -66,9 +90,9 @@ export function loginUser({ phone, password }) {
   return user;
 }
 
-export function loginWithWorldApp(profile) {
+export function loginWithWorldApp(profile, changes = {}) {
   const users = getUsers();
-  const existingUser = users.find((entry) => entry.walletAddress === profile.walletAddress);
+  const existingUser = findUserByWalletAddress(profile.walletAddress);
   const user = {
     id: existingUser?.id || crypto.randomUUID(),
     fullName: profile.fullName || profile.username || "World App user",
@@ -80,9 +104,13 @@ export function loginWithWorldApp(profile) {
     authMethod: "world-app",
     preferredCurrency: profile.preferredCurrency || "KES",
     worldAppVersion: profile.worldAppVersion || null,
+    firstAccessVerified: existingUser?.firstAccessVerified || false,
+    firstAccessVerifiedAt: existingUser?.firstAccessVerifiedAt || null,
+    firstAccessVerificationLevel: existingUser?.firstAccessVerificationLevel || "",
     isAdmin: existingUser?.isAdmin || false,
     createdAt: existingUser?.createdAt || new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    ...changes,
   };
 
   const nextUsers = existingUser

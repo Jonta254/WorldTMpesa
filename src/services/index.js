@@ -1,7 +1,9 @@
 export { APP_CONFIG } from "../config/appConfig";
 export {
+  findUserByWalletAddress,
   getCurrentUser,
   initializeUsers,
+  isUserAccessVerified,
   loginUser,
   loginWithWorldApp,
   logoutUser,
