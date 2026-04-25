@@ -54,41 +54,30 @@ function LoginPage() {
   return (
     <div className="page-bg">
       <div className="auth-layout auth-layout-single">
-        <section className="auth-card stack auth-entry-card">
-          <span className="brand-kicker">TMpesa</span>
-          <div>
-            <h2>Connect and start exchanging</h2>
-            <p className="muted">
-              Sign in with World App to place a sell or buy order. TMpesa will use your World
-              username on each order and your saved M-Pesa details for settlement.
-            </p>
-          </div>
-
-          <div className="auth-steps">
-            <div>
-              <strong>1. Connect your World account</strong>
-              <p>Use wallet authentication so TMpesa can recognize your World username.</p>
+        <section className="auth-card stack auth-entry-card auth-splash-card">
+          <div className="auth-splash-top">
+            <div className="auth-logo-frame">
+              <img src="/tmpesa-icon.svg" alt="TMpesa" className="auth-logo-mark" />
             </div>
-            <div>
-              <strong>2. Place a buy or sell order</strong>
-              <p>Choose the amount, review the current rate, and confirm the request.</p>
-            </div>
-            <div>
-              <strong>3. Track completion in Orders</strong>
-              <p>Every request moves from pending to paid to completed after manual confirmation.</p>
+            <div className="auth-splash-copy">
+              <h2>TMpesa</h2>
+              <p className="muted">
+                Connect your World account to buy WLD or USDC with M-Pesa, or sell and receive KES
+                settlement to your saved payout number.
+              </p>
             </div>
           </div>
 
           {error ? <div className="error">{error}</div> : null}
 
-          <div className="stack">
+          <div className="stack auth-cta-block">
             <button
               type="button"
-              className="button"
+              className="button auth-connect-button"
               onClick={handleWorldAppLogin}
               disabled={!worldApp.isInstalled || worldLoading}
             >
-              {worldLoading ? "Connecting wallet..." : "Continue with World App"}
+              {worldLoading ? "Connecting wallet..." : "Connect Wallet"}
             </button>
             <div className="notice">
               {worldApp.isInstalled
@@ -100,6 +89,30 @@ function LoginPage() {
                 Open in World App
               </a>
             ) : null}
+          </div>
+
+          <div className="auth-feature-list">
+            <div>
+              <span className="auth-feature-icon auth-feature-blue">T</span>
+              <div>
+                <strong>Direct wallet sign-in</strong>
+                <p>Use Wallet Auth so TMpesa can recognize your World username immediately.</p>
+              </div>
+            </div>
+            <div>
+              <span className="auth-feature-icon auth-feature-green">K</span>
+              <div>
+                <strong>Buy with KES, sell to M-Pesa</strong>
+                <p>Place orders quickly and track each one from pending to completion.</p>
+              </div>
+            </div>
+            <div>
+              <span className="auth-feature-icon auth-feature-gold">S</span>
+              <div>
+                <strong>Manual review for safety</strong>
+                <p>Rates are clear, settlement is reviewed, and support stays available by email.</p>
+              </div>
+            </div>
           </div>
 
           <details className="admin-access-panel">

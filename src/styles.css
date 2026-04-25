@@ -92,6 +92,74 @@ button {
   gap: 18px;
 }
 
+.auth-splash-card {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top center, rgba(79, 124, 255, 0.2), transparent 28%),
+    linear-gradient(180deg, rgba(9, 13, 25, 0.98), rgba(10, 16, 28, 0.96));
+}
+
+.auth-splash-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 20% 18%, rgba(255, 255, 255, 0.16) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 78% 12%, rgba(255, 255, 255, 0.14) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 62% 28%, rgba(255, 255, 255, 0.12) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 30% 36%, rgba(255, 255, 255, 0.1) 0 1px, transparent 1.5px);
+}
+
+.auth-splash-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.auth-splash-top {
+  display: grid;
+  gap: 18px;
+  justify-items: center;
+  text-align: center;
+  padding-top: 6px;
+}
+
+.auth-logo-frame {
+  display: grid;
+  place-items: center;
+  width: 112px;
+  height: 112px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 18px 40px rgba(0, 0, 0, 0.28);
+}
+
+.auth-logo-mark {
+  width: 72px;
+  height: 72px;
+}
+
+.auth-splash-copy h2 {
+  margin: 0;
+  font-size: clamp(2.3rem, 8vw, 3.2rem);
+  line-height: 0.98;
+}
+
+.auth-splash-copy p {
+  margin: 14px 0 0;
+  font-size: 1.04rem;
+}
+
+.auth-cta-block {
+  gap: 10px;
+}
+
+.auth-connect-button {
+  min-height: 58px;
+  font-size: 1.05rem;
+}
+
 .brand-kicker {
   display: inline-flex;
   align-items: center;
@@ -149,6 +217,52 @@ button {
 .auth-steps p {
   margin: 6px 0 0;
   color: var(--muted);
+}
+
+.auth-feature-list {
+  display: grid;
+  gap: 14px;
+}
+
+.auth-feature-list > div {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.auth-feature-list strong {
+  display: block;
+  color: #edf2ff;
+}
+
+.auth-feature-list p {
+  margin: 4px 0 0;
+  color: var(--muted);
+}
+
+.auth-feature-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.auth-feature-blue {
+  background: rgba(79, 124, 255, 0.22);
+}
+
+.auth-feature-green {
+  background: rgba(54, 211, 153, 0.24);
+}
+
+.auth-feature-gold {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fff0c3;
 }
 
 .admin-access-panel summary {
