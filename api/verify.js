@@ -1,3 +1,4 @@
+import { verifyCloudProof } from "@worldcoin/minikit-js";
 import { allowMethods, readJsonBody, sendJson } from "./_lib/http.js";
 import { getWorldPortalConfig } from "./_lib/world.js";
 
@@ -18,7 +19,6 @@ export default async function handler(req, res) {
     }
 
     const { appId } = getWorldPortalConfig();
-    const { verifyCloudProof } = await import("@worldcoin/minikit-js");
     const verifyRes = await verifyCloudProof(payload, appId, action, signal);
 
     if (!verifyRes?.success) {
