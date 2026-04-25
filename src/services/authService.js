@@ -53,22 +53,6 @@ export function isUserAccessVerified(user) {
   return Boolean(user.firstAccessVerified);
 }
 
-export function getWorldAccessLabel(user) {
-  if (!user?.authMethod || user.authMethod !== "world-app") {
-    return "";
-  }
-
-  if (user.lastLoginVerificationAt) {
-    return "verified-on-login";
-  }
-
-  if (user.firstAccessVerified) {
-    return "verified";
-  }
-
-  return "";
-}
-
 export function signupUser(payload) {
   const users = getUsers();
   const exists = users.some((user) => user.phone === payload.phone);
@@ -123,8 +107,6 @@ export function loginWithWorldApp(profile, changes = {}) {
     firstAccessVerified: existingUser?.firstAccessVerified || false,
     firstAccessVerifiedAt: existingUser?.firstAccessVerifiedAt || null,
     firstAccessVerificationLevel: existingUser?.firstAccessVerificationLevel || "",
-    lastLoginVerificationAt: existingUser?.lastLoginVerificationAt || null,
-    lastLoginVerificationLevel: existingUser?.lastLoginVerificationLevel || "",
     isAdmin: existingUser?.isAdmin || false,
     createdAt: existingUser?.createdAt || new Date().toISOString(),
     updatedAt: new Date().toISOString(),
