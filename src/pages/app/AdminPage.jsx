@@ -86,18 +86,30 @@ function AdminPage() {
 
   return (
     <div className="stack">
-      <section className="panel stack">
-        <span className="brand-kicker">Admin Simulation</span>
-        <div>
-          <h2>Manual confirmation panel</h2>
-          <p className="muted">
-            Review sell orders after World Pay and buy orders after M-Pesa payment. Complete orders
-            only after you have sent KES or crypto manually.
-          </p>
+      <section className="panel stack task-panel">
+        <div className="page-section-head">
+          <div>
+            <span className="brand-kicker">Admin panel</span>
+            <h2>Manual confirmation and live settings</h2>
+            <p className="muted">
+              Update exchange rates, operational details, and review order status after manual
+              settlement has been completed.
+            </p>
+          </div>
+          <div className="mini-metrics">
+            <div>
+              <span>Total orders</span>
+              <strong>{orders.length}</strong>
+            </div>
+            <div>
+              <span>Payout queue</span>
+              <strong>{payoutQueue.length}</strong>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section className="panel stack">
+      <section className="panel stack task-panel">
         <div className="split">
           <div>
             <h3>Exchange Rate Control</h3>
@@ -152,7 +164,7 @@ function AdminPage() {
         </button>
       </section>
 
-      <section className="panel stack">
+      <section className="panel stack task-panel">
         <div>
           <h3>Mini App Operations</h3>
           <p className="muted">
@@ -256,7 +268,7 @@ function AdminPage() {
       </section>
 
       {payoutQueue.length ? (
-        <section className="panel stack">
+        <section className="panel stack task-panel">
           <div>
             <span className="brand-kicker">Payout Queue</span>
             <h3>Sell orders ready for M-Pesa payout</h3>

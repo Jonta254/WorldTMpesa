@@ -31,10 +31,14 @@ function OrdersPage() {
     setMessage("Payment code submitted. Admin will confirm and send your crypto.");
   };
 
+  const pendingCount = orders.filter((order) => order.status === "pending").length;
+  const paidCount = orders.filter((order) => order.status === "paid").length;
+  const completedCount = orders.filter((order) => order.status === "completed").length;
+
   return (
     <div className="stack">
-      <section className="panel stack">
-        <div className="split">
+      <section className="panel stack task-panel">
+        <div className="page-section-head">
           <div>
             <span className="brand-kicker">Orders</span>
             <h2>Your activity</h2>
@@ -43,9 +47,23 @@ function OrdersPage() {
               once you submit proof, and completed after admin confirmation.
             </p>
           </div>
-          {user?.isAdmin ? <Link to="/admin" className="button-secondary">Open Admin</Link> : null}
+          <div className="mini-metrics">
+            <div>
+              <span>Pending</span>
+              <strong>{pendingCount}</strong>
+            </div>
+            <div>
+              <span>Paid</span>
+              <strong>{paidCount}</strong>
+            </div>
+            <div>
+              <span>Done</span>
+              <strong>{completedCount}</strong>
+            </div>
+          </div>
         </div>
         {message ? <div className="notice">{message}</div> : null}
+        {user?.isAdmin ? <Link to="/admin" className="button-secondary">Open Admin</Link> : null}
       </section>
 
       {orders.length ? (

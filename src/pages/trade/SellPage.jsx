@@ -75,16 +75,26 @@ function SellPage() {
 
   return (
     <div className="content-grid">
-      <section className="panel stack">
-        <span className="brand-kicker">Sell WLD/USDC</span>
-        <div>
-          <h2>Send from World App, receive KES on M-Pesa</h2>
-          <p className="muted">
-            Enter the amount you want to sell, confirm your payout phone, then send directly from
-            your World wallet to the TMpesa receiver. The admin sees your paid order and sends KES
-            to your saved M-Pesa number.
-          </p>
-          <p className="muted">Rate shown now: KES {exchangeRate} per {asset}. Fees are excluded.</p>
+      <section className="panel stack task-panel">
+        <div className="page-section-head">
+          <div>
+            <span className="brand-kicker">Sell WLD/USDC</span>
+            <h2>Sell from World App and settle to M-Pesa</h2>
+            <p className="muted">
+              Keep one payout number, enter the asset amount, then complete the transfer from your
+              World wallet. TMpesa marks the order for manual payout after payment is confirmed.
+            </p>
+          </div>
+          <div className="mini-metrics">
+            <div>
+              <span>Current rate</span>
+              <strong>KES {exchangeRate}</strong>
+            </div>
+            <div>
+              <span>Asset</span>
+              <strong>{asset}</strong>
+            </div>
+          </div>
         </div>
 
         {error ? <div className="error">{error}</div> : null}
@@ -130,6 +140,10 @@ function SellPage() {
               <span>You will receive</span>
               <strong>KES {kesAmount.toLocaleString()}</strong>
             </div>
+            <div className="soft-note">
+              Displayed rates exclude fees. Final settlement may vary slightly after network and
+              payout handling.
+            </div>
 
             <button type="button" className="button" onClick={placeOrder}>
               Create Sell Order
@@ -141,7 +155,7 @@ function SellPage() {
           <div className="stack">
             {canSendInsideMiniApp ? (
               <div className="highlight-box action-highlight">
-                <strong>Step 2: Pay with World App</strong>
+                <strong>Step 2: Send with World App</strong>
                 <p className="muted">
                   Tap send and approve the World Pay sheet. The payment goes to the TMpesa
                   Worldchain receiver below and your order moves to admin payout automatically.
@@ -164,8 +178,8 @@ function SellPage() {
               <strong>KES {currentOrder.kesAmount.toLocaleString()}</strong>
             </div>
             <div className="info-box receipt-card">
-              <strong>Your payout destination</strong>
-              <span>M-Pesa phone number admin will pay</span>
+              <strong>M-Pesa payout destination</strong>
+              <span>This number is used when the admin sends your KES settlement.</span>
               <code>{currentOrder.payoutPhoneNumber}</code>
             </div>
 
@@ -217,13 +231,17 @@ function SellPage() {
         ) : null}
       </section>
 
-      <aside className="summary-card stack">
-        <h3>Sell Flow</h3>
+      <aside className="summary-card stack guide-panel">
+        <h3>Sell guide</h3>
         <div className="flow-list">
-          <div><span>1</span><p>Choose WLD/USDC and enter the amount.</p></div>
-          <div><span>2</span><p>Confirm your M-Pesa payout number.</p></div>
-          <div><span>3</span><p>Approve World Pay inside World App.</p></div>
-          <div><span>4</span><p>Admin pays KES to your saved phone number.</p></div>
+          <div><span>1</span><p>Choose the asset and amount you want to sell.</p></div>
+          <div><span>2</span><p>Confirm the M-Pesa number that should receive your KES.</p></div>
+          <div><span>3</span><p>Approve the transfer inside World App or submit the transaction hash.</p></div>
+          <div><span>4</span><p>Watch the order move from pending to paid to completed.</p></div>
+        </div>
+        <div className="soft-note">
+          TMpesa uses your World username for identity and your saved payout phone for cash
+          settlement.
         </div>
         <div className="support-card">
           <strong>Need help?</strong>

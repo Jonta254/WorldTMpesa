@@ -26,15 +26,26 @@ function BuyPage() {
 
   return (
     <div className="content-grid">
-      <section className="panel stack">
-        <span className="brand-kicker">Buy WLD/USDC</span>
-        <div>
-          <h2>Pay with M-Pesa, receive crypto to your World account</h2>
-          <p className="muted">
-            TMpesa records your World username or wallet destination when you place the order. Pay
-            the shown KES amount to the till, then submit your M-Pesa code for admin confirmation.
-          </p>
-          <p className="muted">Rate shown now: KES {exchangeRate} per {asset}. Fees are excluded.</p>
+      <section className="panel stack task-panel">
+        <div className="page-section-head">
+          <div>
+            <span className="brand-kicker">Buy WLD/USDC</span>
+            <h2>Pay with M-Pesa and receive crypto</h2>
+            <p className="muted">
+              Create the buy request first, then pay the shown till number and return with your
+              M-Pesa code. TMpesa keeps your World username or wallet attached to the order.
+            </p>
+          </div>
+          <div className="mini-metrics">
+            <div>
+              <span>Current rate</span>
+              <strong>KES {exchangeRate}</strong>
+            </div>
+            <div>
+              <span>Asset</span>
+              <strong>{asset}</strong>
+            </div>
+          </div>
         </div>
 
         {error ? <div className="error">{error}</div> : null}
@@ -92,6 +103,9 @@ function BuyPage() {
               <span>Amount to pay</span>
               <strong>KES {kesAmount.toLocaleString()}</strong>
             </div>
+            <div className="soft-note">
+              Displayed rates exclude fees. Admin confirms the final order before delivery.
+            </div>
 
             <button type="button" className="button" onClick={placeOrder}>
               Create Buy Order
@@ -115,8 +129,8 @@ function BuyPage() {
             </div>
 
             <div className="notice">
-              Copy the till number, leave World App to pay in M-Pesa, then return and submit your
-              M-Pesa transaction code here or from the Orders page.
+              Copy the till number, complete the M-Pesa payment, then come back and mark the order
+              as paid using your transaction code.
             </div>
 
             <div className="sr-only">
@@ -155,13 +169,17 @@ function BuyPage() {
         ) : null}
       </section>
 
-      <aside className="summary-card stack">
-        <h3>Buy Flow</h3>
+      <aside className="summary-card stack guide-panel">
+        <h3>Buy guide</h3>
         <div className="flow-list">
-          <div><span>1</span><p>Choose WLD/USDC and enter the amount.</p></div>
-          <div><span>2</span><p>TMpesa records your World username or wallet.</p></div>
-          <div><span>3</span><p>Pay the KES amount to till {settings.mpesaPaybillNumber}.</p></div>
-          <div><span>4</span><p>Submit your M-Pesa code for admin delivery.</p></div>
+          <div><span>1</span><p>Choose the asset and amount you want to buy.</p></div>
+          <div><span>2</span><p>TMpesa records your World username or destination wallet.</p></div>
+          <div><span>3</span><p>Pay the shown KES amount to till {settings.mpesaPaybillNumber}.</p></div>
+          <div><span>4</span><p>Submit your M-Pesa code so the admin can release the crypto.</p></div>
+        </div>
+        <div className="soft-note">
+          If TMpesa detects your World username automatically, that is the preferred destination
+          for delivery.
         </div>
         <div className="support-card">
           <strong>Need help?</strong>
