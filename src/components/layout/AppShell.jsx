@@ -9,10 +9,10 @@ import {
 } from "../../services";
 
 const navItems = [
-  { to: "/", label: "Dashboard" },
-  { to: "/sell", label: "Sell" },
-  { to: "/buy", label: "Buy" },
-  { to: "/orders", label: "Orders" },
+  { to: "/", label: "Home", icon: "H" },
+  { to: "/sell", label: "Sell", icon: "S" },
+  { to: "/buy", label: "Buy", icon: "B" },
+  { to: "/orders", label: "Orders", icon: "O" },
 ];
 
 function AppShell() {
@@ -35,12 +35,13 @@ function AppShell() {
       className="page-bg"
       style={{
         paddingTop: insets?.top ? `${Math.max(insets.top, 20)}px` : undefined,
-        paddingBottom: insets?.bottom ? `${Math.max(insets.bottom + 20, 32)}px` : undefined,
+        paddingBottom: insets?.bottom ? `${Math.max(insets.bottom + 104, 120)}px` : undefined,
       }}
     >
       <div className="app-layout app-shell">
         <header className="topbar">
           <div className="brand-block">
+            <span className="brand-kicker">TMpesa</span>
             <h1>{APP_CONFIG.appName}</h1>
           </div>
           <button type="button" className="button-ghost" onClick={handleLogout}>
@@ -64,23 +65,25 @@ function AppShell() {
           ) : null}
         </div>
 
-        <nav className="nav-row">
+        <nav className={`tab-bar${user?.isAdmin ? " admin" : ""}`}>
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               end={item.to === "/"}
-              className={({ isActive }) => `nav-link${isActive ? " active" : ""}`}
+              className={({ isActive }) => `tab-link${isActive ? " active" : ""}`}
             >
-              {item.label}
+              <span className="tab-icon" aria-hidden="true">{item.icon}</span>
+              <span>{item.label}</span>
             </NavLink>
           ))}
           {user?.isAdmin ? (
             <NavLink
               to="/admin"
-              className={({ isActive }) => `nav-link${isActive ? " active" : ""}`}
+              className={({ isActive }) => `tab-link${isActive ? " active" : ""}`}
             >
-              Admin
+              <span className="tab-icon" aria-hidden="true">A</span>
+              <span>Admin</span>
             </NavLink>
           ) : null}
         </nav>

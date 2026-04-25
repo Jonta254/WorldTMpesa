@@ -52,7 +52,7 @@ button {
 
 .page-bg {
   min-height: 100vh;
-  padding: 20px 16px 32px;
+  padding: 20px 16px 120px;
 }
 
 .auth-layout,
@@ -349,8 +349,7 @@ button:disabled {
   gap: 18px;
 }
 
-.topbar,
-.nav-row {
+.topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -366,16 +365,6 @@ button:disabled {
   font-size: 1.55rem;
 }
 
-.nav-row {
-  overflow-x: auto;
-  padding-bottom: 4px;
-  scrollbar-width: none;
-}
-
-.nav-row::-webkit-scrollbar {
-  display: none;
-}
-
 .context-strip {
   display: flex;
   justify-content: space-between;
@@ -389,19 +378,56 @@ button:disabled {
   flex-wrap: wrap;
 }
 
-.nav-link {
-  padding: 10px 14px;
-  border-radius: 999px;
-  white-space: nowrap;
-  background: rgba(148, 163, 184, 0.09);
-  border: 1px solid transparent;
-  color: #d5def5;
+.tab-bar {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 30;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  padding: 10px;
+  border-radius: 24px;
+  background: rgba(11, 15, 26, 0.94);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(16px);
 }
 
-.nav-link.active {
-  background: var(--primary-soft);
-  color: #edf2ff;
-  border-color: rgba(79, 124, 255, 0.3);
+.tab-bar.admin {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.tab-link {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 10px 6px;
+  border-radius: 18px;
+  color: #b8c3de;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.tab-link.active {
+  background: rgba(79, 124, 255, 0.16);
+  color: #eef3ff;
+}
+
+.tab-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.1);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.tab-link.active .tab-icon {
+  background: rgba(79, 124, 255, 0.22);
 }
 
 .hero-card {
@@ -1005,7 +1031,7 @@ button:disabled {
 
 @media (min-width: 760px) {
   .page-bg {
-    padding: 28px 22px 40px;
+    padding: 28px 22px 136px;
   }
 
   .hero-grid {
@@ -1052,5 +1078,12 @@ button:disabled {
 
   .detail-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tab-bar {
+    left: 50%;
+    right: auto;
+    width: min(100%, 560px);
+    transform: translateX(-50%);
   }
 }
