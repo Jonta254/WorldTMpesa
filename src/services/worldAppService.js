@@ -29,7 +29,9 @@ function toTokenUnits(amount, decimals) {
 }
 
 async function runMiniKitCommand(commandName, payload) {
-  const command = MiniKit[commandName] || MiniKit.commandsAsync?.[commandName];
+  const asyncCommandName = `${commandName}Async`;
+  const command =
+    MiniKit[asyncCommandName] || MiniKit.commandsAsync?.[commandName] || MiniKit[commandName];
 
   if (!command) {
     throw new Error(`World App command ${commandName} is not available in this MiniKit version.`);
