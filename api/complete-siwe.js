@@ -1,4 +1,4 @@
-import { verifySiweMessage } from "@worldcoin/minikit-js/siwe";
+import { verifySiweMessage } from "@worldcoin/minikit-js";
 import { parseCookies, serializeCookie } from "./_lib/cookies.js";
 import { allowMethods, readJsonBody, sendJson } from "./_lib/http.js";
 import { isValidSignedServerNonce } from "./_lib/world.js";
