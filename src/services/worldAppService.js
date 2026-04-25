@@ -5,6 +5,7 @@ import {
   confirmWorldPayment,
   createPaymentReference,
   requestServerNonce,
+  verifyHighValueOrder,
 } from "./backendService";
 import { getSettings } from "./settingsService";
 
@@ -167,5 +168,35 @@ export async function requestWorldPayment({ amount, asset = "WLD", description, 
     transactionId: normalizedPayload.transactionId,
     verified: confirmation.verified,
     transactionStatus: confirmation.transactionStatus,
+  };
+}
+
+export async function requestWorldVerification({
+  action = APP_CONFIG.highValueOrderAction,
+  signal,
+  verificationLevel = "device",
+}) {
+  if (!MiniKit.isInstalled()) {
+    throw new Error("Open TMpesa inside World App to complete the human verification step.");
+  }
+
+  const verificationPayload = {
+    action,
+    signal,
+    verification_level: verificationLevel,
+  };
+
+  const { finalPayload } = await runMiniKitCommand("verify", verificationPayload);
+  const verification = await verifyHighValueOrder(finalPayload, action, signal);
+
+  if (!verification?.success) {
+    throw new Error(verification?.error || "TMpesa could not verify this order.");
+  }
+
+  return {
+    verificationLevel: finalPayload.verification_level || verificationLevel,
+    nullifierHash: finalPayload.nullifier_hash,
+    merkleRoot: finalPayload.merkle_root,
+    signal,
   };
 }

@@ -50,6 +50,15 @@ function OrderCard({ order, children }) {
             <strong>{order.paymentReference}</strong>
           </div>
         ) : null}
+        {order.humanVerificationStatus ? (
+          <div className="detail-item">
+            <span>Human check</span>
+            <strong>
+              {order.humanVerificationStatus}
+              {order.humanVerificationLevel ? ` (${order.humanVerificationLevel})` : ""}
+            </strong>
+          </div>
+        ) : null}
       </div>
 
       <div className="order-meta">

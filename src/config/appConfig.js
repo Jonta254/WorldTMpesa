@@ -2,6 +2,8 @@ export const APP_CONFIG = {
   appName: "TMpesa",
   repoName: "WorldTMpesa",
   worldAppId: "app_02bd6decc052fc1dfa29487444f6c6f",
+  highValueOrderAction: "high-value-order-check",
+  highValueOrderKesThreshold: 10000,
   defaultSettings: {
     ratesKes: {
       WLD: 120,

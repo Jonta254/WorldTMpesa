@@ -33,4 +33,5 @@ export {
   connectWithWorldAppWallet,
   getWorldAppContext,
   requestWorldPayment,
+  requestWorldVerification,
 } from "./worldAppService";

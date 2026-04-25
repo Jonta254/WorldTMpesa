@@ -1,10 +1,17 @@
 import { useAppSettings } from "../../hooks/useAppSettings";
 import { useOrderFlow } from "../../hooks/useOrderFlow";
-import { getCurrentUser, openSupportEmail } from "../../services";
+import {
+  APP_CONFIG,
+  getCurrentUser,
+  getWorldAppContext,
+  openSupportEmail,
+  requestWorldVerification,
+} from "../../services";
 
 function BuyPage() {
   const settings = useAppSettings();
   const currentUser = getCurrentUser();
+  const worldApp = getWorldAppContext();
   const {
     asset,
     setAsset,
@@ -17,12 +24,37 @@ function BuyPage() {
     step,
     currentOrder,
     error,
+    setError,
     kesAmount,
     exchangeRate,
     placeOrder,
     markAsPaid,
     supportedAssets,
   } = useOrderFlow("buy");
+  const requiresHumanVerification = kesAmount >= APP_CONFIG.highValueOrderKesThreshold;
+
+  const handleCreateBuyOrder = async () => {
+    if (requiresHumanVerification && worldApp.isInstalled) {
+      try {
+        setError("");
+        const verification = await requestWorldVerification({
+          action: APP_CONFIG.highValueOrderAction,
+          signal: `buy:${asset}:${cryptoAmount}:${kesAmount}`,
+          verificationLevel: "device",
+        });
+        placeOrder({
+          humanVerificationStatus: "verified",
+          humanVerificationLevel: verification.verificationLevel,
+        });
+        return;
+      } catch (nextError) {
+        setError(nextError.message);
+        return;
+      }
+    }
+
+    placeOrder();
+  };
 
   return (
     <div className="content-grid">
@@ -106,8 +138,14 @@ function BuyPage() {
             <div className="soft-note">
               Displayed rates exclude fees. Admin confirms the final order before delivery.
             </div>
+            {requiresHumanVerification ? (
+              <div className="notice">
+                This order is above KES {APP_CONFIG.highValueOrderKesThreshold.toLocaleString()}.
+                TMpesa will request a World human check before creating it.
+              </div>
+            ) : null}
 
-            <button type="button" className="button" onClick={placeOrder}>
+            <button type="button" className="button" onClick={handleCreateBuyOrder}>
               Create Buy Order
             </button>
           </div>

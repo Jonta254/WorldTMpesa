@@ -25,7 +25,7 @@ export function useOrderFlow(type, initialAsset = "WLD") {
     return parsedAmount * exchangeRate;
   }, [cryptoAmount, exchangeRate]);
 
-  const placeOrder = () => {
+  const placeOrder = (options = {}) => {
     setError("");
 
     if (!cryptoAmount || Number(cryptoAmount) <= 0) {
@@ -55,6 +55,8 @@ export function useOrderFlow(type, initialAsset = "WLD") {
       walletAddress: walletAddress.trim(),
       payoutPhoneNumber: payoutPhoneNumber.trim(),
       destinationUsername: currentUser?.username || "",
+      humanVerificationStatus: options.humanVerificationStatus || "",
+      humanVerificationLevel: options.humanVerificationLevel || "",
     });
 
     setCurrentOrder(order);

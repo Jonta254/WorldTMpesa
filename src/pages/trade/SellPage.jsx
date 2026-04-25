@@ -2,10 +2,12 @@ import { useState } from "react";
 import { useAppSettings } from "../../hooks/useAppSettings";
 import { useOrderFlow } from "../../hooks/useOrderFlow";
 import {
+  APP_CONFIG,
   canUseWorldPay,
   getWorldAppContext,
   openSupportEmail,
   requestWorldPayment,
+  requestWorldVerification,
   updateOrder,
 } from "../../services";
 
@@ -37,6 +39,7 @@ function SellPage() {
     worldApp.isInstalled &&
     canUseWorldPay(asset) &&
     Boolean(settings.sellWalletAddress?.trim());
+  const requiresHumanVerification = kesAmount >= APP_CONFIG.highValueOrderKesThreshold;
 
   const handleMiniAppSend = async () => {
     if (!currentOrder) {
@@ -71,6 +74,29 @@ function SellPage() {
     } finally {
       setSendLoading(false);
     }
+  };
+
+  const handleCreateSellOrder = async () => {
+    if (requiresHumanVerification && worldApp.isInstalled) {
+      try {
+        setError("");
+        const verification = await requestWorldVerification({
+          action: APP_CONFIG.highValueOrderAction,
+          signal: `sell:${asset}:${cryptoAmount}:${kesAmount}`,
+          verificationLevel: "device",
+        });
+        placeOrder({
+          humanVerificationStatus: "verified",
+          humanVerificationLevel: verification.verificationLevel,
+        });
+        return;
+      } catch (nextError) {
+        setError(nextError.message);
+        return;
+      }
+    }
+
+    placeOrder();
   };
 
   return (
@@ -144,8 +170,14 @@ function SellPage() {
               Displayed rates exclude fees. Final settlement may vary slightly after network and
               payout handling.
             </div>
+            {requiresHumanVerification ? (
+              <div className="notice">
+                This order is above KES {APP_CONFIG.highValueOrderKesThreshold.toLocaleString()}.
+                TMpesa will ask for a World human check before creating it.
+              </div>
+            ) : null}
 
-            <button type="button" className="button" onClick={placeOrder}>
+            <button type="button" className="button" onClick={handleCreateSellOrder}>
               Create Sell Order
             </button>
           </div>

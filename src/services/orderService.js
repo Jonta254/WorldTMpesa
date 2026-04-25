@@ -62,6 +62,8 @@ export function createOrder(payload) {
     walletAddress: payload.walletAddress || "",
     destinationUsername: payload.destinationUsername || currentUser.username || "",
     payoutPhoneNumber: payload.payoutPhoneNumber || "",
+    humanVerificationStatus: payload.humanVerificationStatus || "",
+    humanVerificationLevel: payload.humanVerificationLevel || "",
     paymentReference: payload.paymentReference || "",
     status: "pending",
     createdAt: new Date().toISOString(),
