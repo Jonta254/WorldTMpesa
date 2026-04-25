@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import AuthHero from "../../components/auth/AuthHero";
 import { signupUser } from "../../services";
 
 function SignupPage() {
@@ -32,15 +31,14 @@ function SignupPage() {
 
   return (
     <div className="page-bg">
-      <div className="auth-layout content-grid">
-        <AuthHero />
-        <section className="auth-card stack">
+      <div className="auth-layout auth-layout-single">
+        <section className="auth-card stack auth-entry-card">
           <div>
-            <span className="brand-kicker">Get started</span>
-            <h2>Create your account</h2>
+            <span className="brand-kicker">Admin setup</span>
+            <h2>Create a local account</h2>
             <p className="muted">
-              For normal users, open TMpesa inside World App and continue with wallet
-              authentication. This form is only for manual admin-created local accounts.
+              This page is only for local admin or test setup. Normal users should continue with
+              World App sign-in so their username is attached to each TMpesa order.
             </p>
           </div>
 

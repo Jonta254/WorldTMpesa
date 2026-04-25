@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import AuthHero from "../../components/auth/AuthHero";
 import { useAppSettings } from "../../hooks/useAppSettings";
 import {
   buildWorldAppDeeplink,
@@ -54,16 +53,30 @@ function LoginPage() {
 
   return (
     <div className="page-bg">
-      <div className="auth-layout content-grid">
-        <AuthHero />
-        <section className="auth-card stack">
+      <div className="auth-layout auth-layout-single">
+        <section className="auth-card stack auth-entry-card">
+          <span className="brand-kicker">TMpesa</span>
           <div>
-            <span className="brand-kicker">Welcome back</span>
-            <h2>Continue securely with World App</h2>
+            <h2>Connect and start exchanging</h2>
             <p className="muted">
-              TMpesa uses World App wallet authentication so your World username and wallet can be
-              attached to each order.
+              Sign in with World App to place a sell or buy order. TMpesa will use your World
+              username on each order and your saved M-Pesa details for settlement.
             </p>
+          </div>
+
+          <div className="auth-steps">
+            <div>
+              <strong>1. Connect your World account</strong>
+              <p>Use wallet authentication so TMpesa can recognize your World username.</p>
+            </div>
+            <div>
+              <strong>2. Place a buy or sell order</strong>
+              <p>Choose the amount, review the current rate, and confirm the request.</p>
+            </div>
+            <div>
+              <strong>3. Track completion in Orders</strong>
+              <p>Every request moves from pending to paid to completed after manual confirmation.</p>
+            </div>
           </div>
 
           {error ? <div className="error">{error}</div> : null}
@@ -79,8 +92,8 @@ function LoginPage() {
             </button>
             <div className="notice">
               {worldApp.isInstalled
-                ? "World App detected. Continue to place buy and sell orders."
-                : "Open this app inside World App to continue securely with wallet authentication."}
+                ? "World App detected. Continue directly into TMpesa."
+                : "Open TMpesa inside World App to continue with wallet authentication."}
             </div>
             {!worldApp.isInstalled && settings.worldAppId ? (
               <a href={worldAppLink} className="button-secondary">
