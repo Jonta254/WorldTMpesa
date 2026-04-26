@@ -25,6 +25,7 @@ function LoginPage() {
   const [worldLoading, setWorldLoading] = useState(false);
   const [authStatus, setAuthStatus] = useState("");
   const [authStage, setAuthStage] = useState("idle");
+  const [worldApprovalChecked, setWorldApprovalChecked] = useState(false);
   const targetPath = location.state?.from?.pathname || "/";
 
   const finalizeSessionRedirect = () => {
@@ -179,11 +180,22 @@ function LoginPage() {
           </div>
 
           <div className="stack auth-cta-block">
+            <label className="field checkbox-field">
+              <input
+                type="checkbox"
+                checked={worldApprovalChecked}
+                onChange={(event) => setWorldApprovalChecked(event.target.checked)}
+              />
+              <span>
+                I approve TMpesa to request my World wallet username and wallet address for secure
+                sign-in and first-access protection.
+              </span>
+            </label>
             <button
               type="button"
               className="button auth-connect-button"
               onClick={handleWorldAppLogin}
-              disabled={!worldApp.isInstalled || worldLoading}
+              disabled={!worldApp.isInstalled || worldLoading || !worldApprovalChecked}
             >
               {worldLoading ? "Securing login..." : "Continue with World App"}
             </button>
