@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppSettings } from "../../hooks/useAppSettings";
 import {
   APP_CONFIG,
   buildWorldAppDeeplink,
+  checkWorldHumanVerification,
   getCurrentUser,
   getOrdersForCurrentUser,
   getWorldAppContext,
@@ -53,6 +54,48 @@ function DashboardPage() {
   const needsFirstAccessVerification =
     user?.authMethod === "world-app" && !user?.isAdmin && !isUserAccessVerified(user);
 
+  const completeLocalVerification = (verificationLevel = "address-book") => {
+    const nextUser = updateCurrentUserProfile({
+      firstAccessVerified: true,
+      firstAccessVerifiedAt: new Date().toISOString(),
+      firstAccessVerificationLevel: verificationLevel,
+    });
+
+    setUser(nextUser);
+    return nextUser;
+  };
+
+  useEffect(() => {
+    if (!needsFirstAccessVerification || !user?.walletAddress) {
+      return;
+    }
+
+    let active = true;
+
+    const syncVerificationState = async () => {
+      const isVerified = await checkWorldHumanVerification(user.walletAddress);
+
+      if (active && isVerified) {
+        completeLocalVerification("address-book");
+      }
+    };
+
+    syncVerificationState();
+
+    const handleVisibilityOrFocus = () => {
+      syncVerificationState();
+    };
+
+    window.addEventListener("focus", handleVisibilityOrFocus);
+    document.addEventListener("visibilitychange", handleVisibilityOrFocus);
+
+    return () => {
+      active = false;
+      window.removeEventListener("focus", handleVisibilityOrFocus);
+      document.removeEventListener("visibilitychange", handleVisibilityOrFocus);
+    };
+  }, [needsFirstAccessVerification, user?.walletAddress]);
+
   const handleFirstAccessVerification = async () => {
     if (!user?.walletAddress) {
       setVerificationError("TMpesa needs your World wallet session before verification can start.");
@@ -63,19 +106,23 @@ function DashboardPage() {
     setVerificationLoading(true);
 
     try {
+      const isAlreadyHumanVerified = await checkWorldHumanVerification(user.walletAddress);
+
+      if (isAlreadyHumanVerified) {
+        completeLocalVerification("address-book");
+
+        const nextPath = location.state?.from?.pathname;
+        navigate(nextPath && nextPath !== "/" ? nextPath : "/", { replace: true });
+        return;
+      }
+
       const verification = await requestWorldVerification({
         action: APP_CONFIG.firstAccessVerificationAction,
         signal: `first-access:${user.walletAddress.toLowerCase()}`,
         verificationLevel: "device",
       });
 
-      const nextUser = updateCurrentUserProfile({
-        firstAccessVerified: true,
-        firstAccessVerifiedAt: new Date().toISOString(),
-        firstAccessVerificationLevel: verification.verificationLevel,
-      });
-
-      setUser(nextUser);
+      completeLocalVerification(verification.verificationLevel);
 
       const nextPath = location.state?.from?.pathname;
       if (nextPath && nextPath !== "/") {
@@ -84,6 +131,16 @@ function DashboardPage() {
         navigate("/", { replace: true });
       }
     } catch (error) {
+      const isVerifiedAfterReturn = await checkWorldHumanVerification(user.walletAddress);
+
+      if (isVerifiedAfterReturn) {
+        completeLocalVerification("address-book");
+
+        const nextPath = location.state?.from?.pathname;
+        navigate(nextPath && nextPath !== "/" ? nextPath : "/", { replace: true });
+        return;
+      }
+
       setVerificationError(
         error instanceof Error ? error.message : "TMpesa could not complete your first-access verification.",
       );

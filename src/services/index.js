@@ -32,6 +32,7 @@ export { openOrderSupportEmail, openSupportEmail } from "./supportService";
 export { notifyAdminOrderCreated } from "./notificationService";
 export {
   buildWorldAppDeeplink,
+  checkWorldHumanVerification,
   canUseWorldPay,
   connectWithWorldAppWallet,
   getWorldAppContext,

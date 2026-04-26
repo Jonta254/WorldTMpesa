@@ -1,4 +1,4 @@
-import { MiniKit } from "@worldcoin/minikit-js";
+import { MiniKit, getIsUserVerified } from "@worldcoin/minikit-js";
 import { APP_CONFIG } from "../config/appConfig";
 import {
   completeSiweVerification,
@@ -200,4 +200,18 @@ export async function requestWorldVerification({
     merkleRoot: data.merkle_root,
     signal,
   };
+}
+
+export async function checkWorldHumanVerification(walletAddress) {
+  const normalizedAddress = String(walletAddress || "").trim();
+
+  if (!normalizedAddress) {
+    return false;
+  }
+
+  try {
+    return Boolean(await getIsUserVerified(normalizedAddress));
+  } catch {
+    return false;
+  }
 }

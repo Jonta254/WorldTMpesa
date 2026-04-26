@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAppSettings } from "../../hooks/useAppSettings";
 import {
   buildWorldAppDeeplink,
+  checkWorldHumanVerification,
   connectWithWorldAppWallet,
   findUserByUsername,
   getCurrentUser,
@@ -96,17 +97,23 @@ function LoginPage() {
       const existingUser =
         findUserByWalletAddress(profile.walletAddress) || findUserByUsername(profile.username);
       const needsFirstAccessVerification = !isUserAccessVerified(existingUser);
+      const isAlreadyHumanVerified = needsFirstAccessVerification
+        ? await checkWorldHumanVerification(profile.walletAddress)
+        : false;
 
       setAuthStage("unlock");
       setAuthStatus(
-        needsFirstAccessVerification
+        needsFirstAccessVerification && !isAlreadyHumanVerified
           ? "Opening TMpesa and preparing your first-access verification..."
           : "Opening your TMpesa session...",
       );
       loginWithWorldApp(profile, {
-        firstAccessVerified: existingUser?.firstAccessVerified || false,
-        firstAccessVerifiedAt: existingUser?.firstAccessVerifiedAt || null,
-        firstAccessVerificationLevel: existingUser?.firstAccessVerificationLevel || "",
+        firstAccessVerified: existingUser?.firstAccessVerified || isAlreadyHumanVerified,
+        firstAccessVerifiedAt:
+          existingUser?.firstAccessVerifiedAt ||
+          (isAlreadyHumanVerified ? new Date().toISOString() : null),
+        firstAccessVerificationLevel:
+          existingUser?.firstAccessVerificationLevel || (isAlreadyHumanVerified ? "address-book" : ""),
       });
 
       finalizeSessionRedirect();
