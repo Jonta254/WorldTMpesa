@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppSettings } from "../../hooks/useAppSettings";
 import {
   APP_CONFIG,
@@ -7,7 +7,9 @@ import {
   getCurrentUser,
   getOrdersForCurrentUser,
   getWorldAppContext,
+  isUserAccessVerified,
   openSupportEmail,
+  requestWorldVerification,
   updateCurrentUserProfile,
 } from "../../services";
 import { useExchangeRates } from "../../hooks/useExchangeRate";
@@ -29,11 +31,15 @@ function formatLaunchSource(location) {
 }
 
 function DashboardPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const initialUser = getCurrentUser();
   const [user, setUser] = useState(initialUser);
   const [profilePhone, setProfilePhone] = useState(initialUser?.mpesaPhoneNumber || initialUser?.phone || "");
   const [profileMessage, setProfileMessage] = useState("");
   const [profileError, setProfileError] = useState("");
+  const [verificationError, setVerificationError] = useState("");
+  const [verificationLoading, setVerificationLoading] = useState(false);
   const worldApp = getWorldAppContext();
   const exchangeRates = useExchangeRates();
   const settings = useAppSettings();
@@ -44,6 +50,47 @@ function DashboardPage() {
   const completedOrders = orders.filter((order) => order.status === "completed").length;
   const launchSource = formatLaunchSource(worldApp.location);
   const hasWorldSession = user?.authMethod === "world-app" || Boolean(user?.username);
+  const needsFirstAccessVerification =
+    user?.authMethod === "world-app" && !user?.isAdmin && !isUserAccessVerified(user);
+
+  const handleFirstAccessVerification = async () => {
+    if (!user?.walletAddress) {
+      setVerificationError("TMpesa needs your World wallet session before verification can start.");
+      return;
+    }
+
+    setVerificationError("");
+    setVerificationLoading(true);
+
+    try {
+      const verification = await requestWorldVerification({
+        action: APP_CONFIG.firstAccessVerificationAction,
+        signal: `first-access:${user.walletAddress.toLowerCase()}`,
+        verificationLevel: "device",
+      });
+
+      const nextUser = updateCurrentUserProfile({
+        firstAccessVerified: true,
+        firstAccessVerifiedAt: new Date().toISOString(),
+        firstAccessVerificationLevel: verification.verificationLevel,
+      });
+
+      setUser(nextUser);
+
+      const nextPath = location.state?.from?.pathname;
+      if (nextPath && nextPath !== "/") {
+        navigate(nextPath, { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
+    } catch (error) {
+      setVerificationError(
+        error instanceof Error ? error.message : "TMpesa could not complete your first-access verification.",
+      );
+    } finally {
+      setVerificationLoading(false);
+    }
+  };
 
   const handleProfileSave = () => {
     setProfileError("");
@@ -61,6 +108,33 @@ function DashboardPage() {
 
   return (
     <div className="stack">
+      {needsFirstAccessVerification ? (
+        <section className="panel stack">
+          <span className="brand-kicker">First access</span>
+          <div>
+            <h3>Complete your World verification</h3>
+            <p className="muted">
+              Your Wallet Auth sign-in is active. Before you place your first TMpesa order, complete
+              one World human check to unlock sell and buy actions.
+            </p>
+          </div>
+          {location.state?.requiresVerification ? (
+            <div className="notice">
+              TMpesa brought you here first because first-access verification is still required.
+            </div>
+          ) : null}
+          {verificationError ? <div className="error">{verificationError}</div> : null}
+          <button
+            type="button"
+            className="button"
+            onClick={handleFirstAccessVerification}
+            disabled={verificationLoading}
+          >
+            {verificationLoading ? "Opening World verification..." : "Complete First-Access Verification"}
+          </button>
+        </section>
+      ) : null}
+
       {!user?.isAdmin && !user?.mpesaPhoneNumber ? (
         <section className="panel stack">
           <span className="brand-kicker">Payout Setup</span>
@@ -189,9 +263,15 @@ function DashboardPage() {
           <p className="muted">
             World Pay sends your asset to TMpesa. Admin then pays KES to your saved M-Pesa number.
           </p>
-          <Link to="/sell" className="button">
-            Sell Crypto
-          </Link>
+          {needsFirstAccessVerification ? (
+            <button type="button" className="button" onClick={handleFirstAccessVerification} disabled={verificationLoading}>
+              Unlock Sell Flow
+            </button>
+          ) : (
+            <Link to="/sell" className="button">
+              Sell Crypto
+            </Link>
+          )}
         </article>
 
         <article className="action-card stack">
@@ -200,9 +280,15 @@ function DashboardPage() {
           <p className="muted">
             TMpesa records your World username or wallet, then shows the till and amount to pay.
           </p>
-          <Link to="/buy" className="button">
-            Buy Crypto
-          </Link>
+          {needsFirstAccessVerification ? (
+            <button type="button" className="button" onClick={handleFirstAccessVerification} disabled={verificationLoading}>
+              Unlock Buy Flow
+            </button>
+          ) : (
+            <Link to="/buy" className="button">
+              Buy Crypto
+            </Link>
+          )}
         </article>
       </section>
 

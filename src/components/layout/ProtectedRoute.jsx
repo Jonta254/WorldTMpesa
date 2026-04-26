@@ -9,8 +9,8 @@ function ProtectedRoute({ children }) {
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
-  if (!isUserAccessVerified(user)) {
-    return <Navigate to="/login" replace state={{ from: location, requiresVerification: true }} />;
+  if (!user.isAdmin && !isUserAccessVerified(user) && location.pathname !== "/") {
+    return <Navigate to="/" replace state={{ from: location, requiresVerification: true }} />;
   }
 
   return children;

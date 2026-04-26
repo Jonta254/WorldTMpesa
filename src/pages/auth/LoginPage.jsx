@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAppSettings } from "../../hooks/useAppSettings";
 import {
-  APP_CONFIG,
   buildWorldAppDeeplink,
   connectWithWorldAppWallet,
   findUserByUsername,
@@ -12,7 +11,6 @@ import {
   isUserAccessVerified,
   loginUser,
   loginWithWorldApp,
-  requestWorldVerification,
 } from "../../services";
 
 function LoginPage() {
@@ -31,8 +29,19 @@ function LoginPage() {
   const finalizeSessionRedirect = () => {
     const currentUser = getCurrentUser();
 
-    if (!currentUser || !isUserAccessVerified(currentUser)) {
-      throw new Error("TMpesa could not save the verified login session. Please try again.");
+    if (!currentUser) {
+      throw new Error("TMpesa could not save your login session. Please try again.");
+    }
+
+    if (!currentUser.isAdmin && !isUserAccessVerified(currentUser)) {
+      navigate("/", {
+        replace: true,
+        state: {
+          requiresVerification: true,
+          from: location.state?.from || { pathname: targetPath },
+        },
+      });
+      return;
     }
 
     navigate(targetPath, { replace: true });
@@ -40,8 +49,10 @@ function LoginPage() {
     window.setTimeout(() => {
       const latestUser = getCurrentUser();
 
-      if (latestUser && isUserAccessVerified(latestUser) && window.location.pathname === "/login") {
-        window.location.replace(targetPath);
+      if (latestUser && window.location.pathname === "/login") {
+        window.location.replace(
+          !latestUser.isAdmin && !isUserAccessVerified(latestUser) ? "/" : targetPath,
+        );
       }
     }, 120);
   };
@@ -49,8 +60,11 @@ function LoginPage() {
   useEffect(() => {
     const currentUser = getCurrentUser();
 
-    if (currentUser && isUserAccessVerified(currentUser)) {
-      navigate(targetPath, { replace: true });
+    if (currentUser) {
+      navigate(
+        !currentUser.isAdmin && !isUserAccessVerified(currentUser) ? "/" : targetPath,
+        { replace: true },
+      );
     }
   }, [navigate, targetPath]);
 
@@ -81,32 +95,18 @@ function LoginPage() {
       const profile = await connectWithWorldAppWallet();
       const existingUser =
         findUserByWalletAddress(profile.walletAddress) || findUserByUsername(profile.username);
-      const isFirstAccess = !isUserAccessVerified(existingUser);
-
-      let verification = null;
-
-      if (isFirstAccess) {
-        setAuthStage("verify");
-        setAuthStatus("Completing your first TMpesa human verification...");
-        verification = await requestWorldVerification({
-          action: APP_CONFIG.firstAccessVerificationAction,
-          signal: `first-access:${profile.walletAddress.toLowerCase()}`,
-          verificationLevel: "device",
-        });
-      }
+      const needsFirstAccessVerification = !isUserAccessVerified(existingUser);
 
       setAuthStage("unlock");
       setAuthStatus(
-        isFirstAccess
-          ? "Unlocking your verified TMpesa session..."
+        needsFirstAccessVerification
+          ? "Opening TMpesa and preparing your first-access verification..."
           : "Opening your TMpesa session...",
       );
       loginWithWorldApp(profile, {
-        firstAccessVerified: true,
-        firstAccessVerifiedAt:
-          existingUser?.firstAccessVerifiedAt || new Date().toISOString(),
-        firstAccessVerificationLevel:
-          existingUser?.firstAccessVerificationLevel || verification?.verificationLevel || "",
+        firstAccessVerified: existingUser?.firstAccessVerified || false,
+        firstAccessVerifiedAt: existingUser?.firstAccessVerifiedAt || null,
+        firstAccessVerificationLevel: existingUser?.firstAccessVerificationLevel || "",
       });
 
       finalizeSessionRedirect();
@@ -150,23 +150,23 @@ function LoginPage() {
               <span className="secure-access-badge">Secure access</span>
               <span className="secure-access-trust">World login protected</span>
             </div>
-            <h3>Login with Wallet Auth and World verification</h3>
+            <h3>Login with Wallet Auth</h3>
             <p className="muted">
-              TMpesa uses Wallet Auth as the primary sign-in. New users then complete one World
-              verification before first access is unlocked.
+              TMpesa uses Wallet Auth as the primary sign-in. If this is your first time, TMpesa
+              will open and then ask you to complete one World verification before trading.
             </p>
             <div className="secure-step-list">
               <div className={authStage === "wallet" ? "active" : ""}>
                 <strong>1. Wallet Auth</strong>
                 <p>Confirm your World wallet and username.</p>
               </div>
-              <div className={authStage === "verify" ? "active" : ""}>
-                <strong>2. First-access verification</strong>
-                <p>New users complete one World human check before entry.</p>
-              </div>
               <div className={authStage === "unlock" ? "active" : ""}>
-                <strong>3. Session unlock</strong>
-                <p>TMpesa opens after the secure check succeeds.</p>
+                <strong>2. App unlock</strong>
+                <p>TMpesa opens immediately after Wallet Auth succeeds.</p>
+              </div>
+              <div>
+                <strong>3. First-access verification</strong>
+                <p>New users complete one World human check inside TMpesa before trading.</p>
               </div>
             </div>
           </div>
@@ -182,7 +182,7 @@ function LoginPage() {
             </button>
             <div className="notice">
               {worldApp.isInstalled
-                ? "World App detected. TMpesa will run Wallet Auth first and, for new users, complete a one-time World verification before entry."
+                ? "World App detected. TMpesa will run Wallet Auth first, then ask new users for a one-time first-access verification inside the app."
                 : "Open TMpesa inside World App to continue with wallet authentication."}
             </div>
             {!worldApp.isInstalled && settings.worldAppId ? (
