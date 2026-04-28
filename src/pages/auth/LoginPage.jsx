@@ -135,10 +135,14 @@ function LoginPage() {
               <img src="/tmpesa-icon.svg" alt="TMpesa" className="auth-logo-mark" />
             </div>
             <div className="auth-splash-copy">
+              <div className="auth-title-row">
+                <span className="brand-kicker">TMpesa</span>
+                <span className="live-badge">World ready</span>
+              </div>
               <h2>TMpesa</h2>
               <p className="muted">
-                Sign in with your World wallet, then complete the required first-access World check
-                the first time you enter TMpesa.
+                Move into TMpesa with secure World wallet sign-in, then unlock buy and sell with a
+                one-time first-access human check if your account needs it.
               </p>
             </div>
           </div>
@@ -178,10 +182,38 @@ function LoginPage() {
             </div>
           </div>
 
+          <div className="launch-card stack">
+            <div className="launch-card-head">
+              <div>
+                <span className="tag">World Wallet Auth</span>
+                <h3>Continue with secure approval</h3>
+              </div>
+              <span className="secure-access-trust">Approval in World App</span>
+            </div>
+            <p className="muted">
+              Tap continue to open the World approval sheet. TMpesa will request secure wallet
+              sign-in, then return you to the app automatically.
+            </p>
+            <div className="launch-permissions">
+              <div>
+                <strong>World username</strong>
+                <span>Used to recognize your TMpesa account</span>
+              </div>
+              <div>
+                <strong>Wallet address</strong>
+                <span>Used for secure session and settlement flow</span>
+              </div>
+              <div>
+                <strong>First-access status</strong>
+                <span>Used only to unlock protected trading actions</span>
+              </div>
+            </div>
+          </div>
+
           <div className="stack auth-cta-block">
-            <div className="notice">
-              When you continue, World App will ask you to approve secure wallet sign-in for
-              TMpesa. New users may then complete one first-access human check inside the app.
+            <div className="notice notice-strong">
+              Approval happens inside World App after you press continue. You do not need to tick a
+              separate box here.
             </div>
             <button
               type="button"
@@ -205,21 +237,21 @@ function LoginPage() {
 
           <div className="auth-feature-list">
             <div>
-              <span className="auth-feature-icon auth-feature-blue">T</span>
+              <span className="auth-feature-icon auth-feature-blue">ID</span>
               <div>
                 <strong>Direct wallet sign-in</strong>
                 <p>Use Wallet Auth so TMpesa can recognize your World username immediately.</p>
               </div>
             </div>
             <div>
-              <span className="auth-feature-icon auth-feature-green">K</span>
+              <span className="auth-feature-icon auth-feature-green">OK</span>
               <div>
                 <strong>Verified first access</strong>
                 <p>New World users complete a one-time World check before TMpesa unlocks.</p>
               </div>
             </div>
             <div>
-              <span className="auth-feature-icon auth-feature-gold">S</span>
+              <span className="auth-feature-icon auth-feature-gold">KES</span>
               <div>
                 <strong>Safe trading flow</strong>
                 <p>Place orders quickly, keep your M-Pesa payout number saved, and track review safely.</p>
