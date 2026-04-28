@@ -215,3 +215,28 @@ export async function checkWorldHumanVerification(walletAddress) {
     return false;
   }
 }
+
+function sleep(milliseconds) {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, milliseconds);
+  });
+}
+
+export async function waitForWorldHumanVerification(
+  walletAddress,
+  { attempts = 6, intervalMs = 1500 } = {},
+) {
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    const isVerified = await checkWorldHumanVerification(walletAddress);
+
+    if (isVerified) {
+      return true;
+    }
+
+    if (attempt < attempts - 1) {
+      await sleep(intervalMs);
+    }
+  }
+
+  return false;
+}

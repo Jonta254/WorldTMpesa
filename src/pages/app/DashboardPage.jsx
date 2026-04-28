@@ -4,7 +4,6 @@ import { useAppSettings } from "../../hooks/useAppSettings";
 import {
   APP_CONFIG,
   buildWorldAppDeeplink,
-  checkWorldHumanVerification,
   getCurrentUser,
   getOrdersForCurrentUser,
   getWorldAppContext,
@@ -12,6 +11,7 @@ import {
   openSupportEmail,
   requestWorldVerification,
   updateCurrentUserProfile,
+  waitForWorldHumanVerification,
 } from "../../services";
 import { useExchangeRates } from "../../hooks/useExchangeRate";
 
@@ -73,7 +73,10 @@ function DashboardPage() {
     let active = true;
 
     const syncVerificationState = async () => {
-      const isVerified = await checkWorldHumanVerification(user.walletAddress);
+      const isVerified = await waitForWorldHumanVerification(user.walletAddress, {
+        attempts: 2,
+        intervalMs: 700,
+      });
 
       if (active && isVerified) {
         completeLocalVerification("address-book");
@@ -106,7 +109,10 @@ function DashboardPage() {
     setVerificationLoading(true);
 
     try {
-      const isAlreadyHumanVerified = await checkWorldHumanVerification(user.walletAddress);
+      const isAlreadyHumanVerified = await waitForWorldHumanVerification(user.walletAddress, {
+        attempts: 2,
+        intervalMs: 700,
+      });
 
       if (isAlreadyHumanVerified) {
         completeLocalVerification("address-book");
@@ -131,7 +137,10 @@ function DashboardPage() {
         navigate("/", { replace: true });
       }
     } catch (error) {
-      const isVerifiedAfterReturn = await checkWorldHumanVerification(user.walletAddress);
+      const isVerifiedAfterReturn = await waitForWorldHumanVerification(user.walletAddress, {
+        attempts: 8,
+        intervalMs: 1500,
+      });
 
       if (isVerifiedAfterReturn) {
         completeLocalVerification("address-book");

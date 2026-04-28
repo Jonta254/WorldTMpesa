@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAppSettings } from "../../hooks/useAppSettings";
 import {
   buildWorldAppDeeplink,
-  checkWorldHumanVerification,
   connectWithWorldAppWallet,
   findUserByUsername,
   getCurrentUser,
@@ -12,6 +11,7 @@ import {
   isUserAccessVerified,
   loginUser,
   loginWithWorldApp,
+  waitForWorldHumanVerification,
 } from "../../services";
 
 function LoginPage() {
@@ -98,7 +98,10 @@ function LoginPage() {
         findUserByWalletAddress(profile.walletAddress) || findUserByUsername(profile.username);
       const needsFirstAccessVerification = !isUserAccessVerified(existingUser);
       const isAlreadyHumanVerified = needsFirstAccessVerification
-        ? await checkWorldHumanVerification(profile.walletAddress)
+        ? await waitForWorldHumanVerification(profile.walletAddress, {
+            attempts: 3,
+            intervalMs: 900,
+          })
         : false;
 
       setAuthStage("unlock");

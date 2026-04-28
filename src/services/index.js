@@ -38,4 +38,5 @@ export {
   getWorldAppContext,
   requestWorldPayment,
   requestWorldVerification,
+  waitForWorldHumanVerification,
 } from "./worldAppService";
