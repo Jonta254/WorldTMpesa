@@ -4,7 +4,9 @@ import { useOrderFlow } from "../../hooks/useOrderFlow";
 import {
   APP_CONFIG,
   canUseWorldPay,
+  getCurrentUser,
   getWorldAppContext,
+  isUserAccessVerified,
   openSupportEmail,
   requestWorldPayment,
   requestWorldVerification,
@@ -13,6 +15,7 @@ import {
 
 function SellPage() {
   const settings = useAppSettings();
+  const currentUser = getCurrentUser();
   const worldApp = getWorldAppContext();
   const [sendLoading, setSendLoading] = useState(false);
   const {
@@ -39,7 +42,10 @@ function SellPage() {
     worldApp.isInstalled &&
     canUseWorldPay(asset) &&
     Boolean(settings.sellWalletAddress?.trim());
-  const requiresHumanVerification = kesAmount >= APP_CONFIG.highValueOrderKesThreshold;
+  const needsOrderVerification =
+    kesAmount >= APP_CONFIG.highValueOrderKesThreshold &&
+    worldApp.isInstalled &&
+    !isUserAccessVerified(currentUser);
 
   const handleMiniAppSend = async () => {
     if (!currentOrder) {
@@ -77,7 +83,7 @@ function SellPage() {
   };
 
   const handleCreateSellOrder = async () => {
-    if (requiresHumanVerification && worldApp.isInstalled) {
+    if (needsOrderVerification) {
       try {
         setError("");
         const verification = await requestWorldVerification({
@@ -170,10 +176,15 @@ function SellPage() {
               Displayed rates exclude fees. Final settlement may vary slightly after network and
               payout handling.
             </div>
-            {requiresHumanVerification ? (
+            {needsOrderVerification ? (
               <div className="notice">
                 This order is above KES {APP_CONFIG.highValueOrderKesThreshold.toLocaleString()}.
                 TMpesa will ask for a World human check before creating it.
+              </div>
+            ) : kesAmount >= APP_CONFIG.highValueOrderKesThreshold ? (
+              <div className="notice">
+                Your World account is already verified, so TMpesa will create this high-value order
+                without asking for another human check.
               </div>
             ) : null}
 

@@ -4,6 +4,7 @@ import {
   APP_CONFIG,
   getCurrentUser,
   getWorldAppContext,
+  isUserAccessVerified,
   openSupportEmail,
   requestWorldVerification,
 } from "../../services";
@@ -31,10 +32,13 @@ function BuyPage() {
     markAsPaid,
     supportedAssets,
   } = useOrderFlow("buy");
-  const requiresHumanVerification = kesAmount >= APP_CONFIG.highValueOrderKesThreshold;
+  const needsOrderVerification =
+    kesAmount >= APP_CONFIG.highValueOrderKesThreshold &&
+    worldApp.isInstalled &&
+    !isUserAccessVerified(currentUser);
 
   const handleCreateBuyOrder = async () => {
-    if (requiresHumanVerification && worldApp.isInstalled) {
+    if (needsOrderVerification) {
       try {
         setError("");
         const verification = await requestWorldVerification({
@@ -138,10 +142,15 @@ function BuyPage() {
             <div className="soft-note">
               Displayed rates exclude fees. Admin confirms the final order before delivery.
             </div>
-            {requiresHumanVerification ? (
+            {needsOrderVerification ? (
               <div className="notice">
                 This order is above KES {APP_CONFIG.highValueOrderKesThreshold.toLocaleString()}.
                 TMpesa will request a World human check before creating it.
+              </div>
+            ) : kesAmount >= APP_CONFIG.highValueOrderKesThreshold ? (
+              <div className="notice">
+                Your World account is already verified, so TMpesa will create this high-value order
+                without requesting another human check.
               </div>
             ) : null}
 
