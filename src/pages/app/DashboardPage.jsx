@@ -171,7 +171,10 @@ export default function DashboardPage() {
   // value snaps, later refreshes roll (see useAnimatedNumber).
   const showBalanceFigure =
     Boolean(user?.walletAddress) && (hasLiveRates || hasBalances);
-  const animatedTotal = useAnimatedNumber(showBalanceFigure ? walletBoard.totalKes : 0);
+  const animatedTotal = useAnimatedNumber(showBalanceFigure ? walletBoard.totalKes : 0, {
+    countUpOnFirst: true,
+    duration: 700,
+  });
   const balanceLabel = showBalanceFigure ? formatKES(animatedTotal) : "KES —";
 
   const balanceSub = useMemo(() => {

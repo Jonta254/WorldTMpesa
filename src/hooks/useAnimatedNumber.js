@@ -53,27 +53,43 @@ function documentHidden() {
   return typeof document !== "undefined" && document.hidden === true;
 }
 
-export function useAnimatedNumber(target, { duration = 620 } = {}) {
+// `countUpOnFirst` opts the first meaningful value into a gentle
+// count-up from zero (the hero balance uses this so opening Home shows
+// the figure roll into place, à la Apple Wallet). Left off, the first
+// value snaps — the right default for the smaller holdings figures,
+// where five numbers counting up at once would read as clutter.
+export function useAnimatedNumber(target, { duration = 620, countUpOnFirst = false } = {}) {
   const numericTarget = Number(target) || 0;
-  const [value, setValue] = useState(numericTarget);
-  const fromRef = useRef(numericTarget);
-  const seededRef = useRef(numericTarget !== 0);
+  const [value, setValue] = useState(countUpOnFirst ? 0 : numericTarget);
+  const fromRef = useRef(countUpOnFirst ? 0 : numericTarget);
+  const seededRef = useRef(countUpOnFirst ? false : numericTarget !== 0);
   const rafRef = useRef(0);
 
   useEffect(() => {
     const to = numericTarget;
-    const from = fromRef.current;
+    const staticSnap = prefersReducedMotion() || documentHidden();
 
-    // Snap the first meaningful value, every change under reduced-motion,
-    // and any change while the tab is hidden (rAF is paused there) with no
-    // interpolation.
-    if (!seededRef.current || prefersReducedMotion() || documentHidden()) {
-      seededRef.current = seededRef.current || to !== 0;
+    if (!seededRef.current) {
+      // Still waiting for the first meaningful value — hold at zero.
+      if (to === 0) return undefined;
+      seededRef.current = true;
+      // First value: snap, unless the caller asked for a count-up and
+      // motion is actually allowed. The count-up rolls from zero.
+      if (!countUpOnFirst || staticSnap) {
+        fromRef.current = to;
+        setValue(to);
+        return undefined;
+      }
+      fromRef.current = 0;
+      // fall through to animate 0 -> to
+    } else if (staticSnap) {
+      // Later changes under reduced-motion / hidden tab: snap.
       fromRef.current = to;
       setValue(to);
       return undefined;
     }
 
+    const from = fromRef.current;
     if (from === to) return undefined;
 
     let start = 0;
