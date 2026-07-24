@@ -31,7 +31,7 @@ export default function HighValueVerifyWidget({
       preset={proofOfHuman(signal ? { signal } : undefined)}
       handleVerify={onVerify}
       onSuccess={onVerified}
-      onError={(code) => onFail && onFail(code)}
+      onError={(error) => onFail && onFail(error)}
     />
   );
 }

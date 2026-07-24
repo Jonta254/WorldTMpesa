@@ -13,6 +13,35 @@ const HighValueVerifyWidget = lazy(
   () => import("../components/worldid/HighValueVerifyWidget"),
 );
 
+// Plain-language mapping for the IDKit / World ID error codes a real user
+// can actually hit at the high-value gate. Anything unmapped still shows its
+// raw code in parentheses so an unexpected failure is never silent.
+const WORLD_ID_ERROR_HINTS = {
+  credential_unavailable:
+    "This World ID isn't Orb-verified yet. High-value orders need an Orb-verified World ID — verify at an Orb, then try again.",
+  max_verifications_reached:
+    "You've already verified with this World ID. Reopen Tcash; if it still asks, contact support.",
+  already_signed: "You've already verified with this World ID.",
+  verification_rejected: "You cancelled the World ID check. You can try again.",
+  invalid_network:
+    "World ID network mismatch — make sure you're on the production World App, not the simulator.",
+  connection_failed:
+    "Couldn't reach World ID. Check your connection and try again.",
+  unexpected_response:
+    "World App returned an unexpected response. Please try again.",
+  generic_error: "World App couldn't start World ID. Please try again.",
+  failed_by_host_app: "World App couldn't start World ID. Please try again.",
+};
+
+function worldIdErrorMessage(code) {
+  if (code && WORLD_ID_ERROR_HINTS[code]) {
+    return WORLD_ID_ERROR_HINTS[code];
+  }
+  return code
+    ? `World ID verification couldn't complete (${code}). You can try again.`
+    : "World ID verification was not completed. You can try again.";
+}
+
 /**
  * Gates high-value order creation behind a one-time World ID proof-of-human.
  *
@@ -114,10 +143,20 @@ export function useHighValueVerification({ wallet } = {}) {
     }
   }, []);
 
-  const handleFail = useCallback(() => {
+  const handleFail = useCallback((reason) => {
     pendingProceed.current = null;
     setOpen(false);
-    setError("World ID verification was not completed. You can try again.");
+    // IDKit hands onError either a string code or an { code, detail } object.
+    // Surface the real code (and a plain-language hint for the ones users
+    // actually hit) instead of one generic line — the old opaque message hid
+    // whether this was "not Orb-verified", "already verified", a cancel, or a
+    // real config/network fault, which is exactly what's needed to diagnose a
+    // prompt that won't open.
+    const code =
+      typeof reason === "string" ? reason : reason?.code || reason?.message || "";
+    // eslint-disable-next-line no-console
+    console.error("World ID verify error:", reason);
+    setError(worldIdErrorMessage(code));
   }, []);
 
   // Only mount (and therefore download) the widget once verification has
