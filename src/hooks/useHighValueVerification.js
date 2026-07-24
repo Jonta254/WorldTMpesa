@@ -13,33 +13,54 @@ const HighValueVerifyWidget = lazy(
   () => import("../components/worldid/HighValueVerifyWidget"),
 );
 
-// Plain-language mapping for the IDKit / World ID error codes a real user
-// can actually hit at the high-value gate. Anything unmapped still shows its
-// raw code in parentheses so an unexpected failure is never silent.
+// Plain-language mapping for World's documented IDKit error codes
+// (docs.world.org/world-id/idkit/error-codes). The raw code is always
+// appended in parentheses so a failure is never ambiguous while this gate is
+// still being hardened on real devices.
 const WORLD_ID_ERROR_HINTS = {
+  // user actions — neutral
+  user_rejected: "You cancelled the World ID check.",
+  verification_rejected: "You cancelled the World ID check.",
+  cancelled: "The World ID check was cancelled.",
+  user_presence_failed: "The World ID check wasn't completed — try again.",
+  // credential / eligibility
   credential_unavailable:
-    "This World ID isn't Orb-verified yet. High-value orders need an Orb-verified World ID — verify at an Orb, then try again.",
+    "This World ID can't provide the required proof yet (an Orb proof of human). Verify at an Orb, then try again.",
+  world_id_4_not_available:
+    "This World App account can't do World ID 4.0 yet. Update World App, or verify at an Orb.",
+  world_id_3_not_available: "This World App account can't complete this check.",
+  identity_attributes_not_matched:
+    "Your World ID didn't match what this order requires.",
   max_verifications_reached:
-    "You've already verified with this World ID. Reopen Tcash; if it still asks, contact support.",
-  already_signed: "You've already verified with this World ID.",
-  verification_rejected: "You cancelled the World ID check. You can try again.",
+    "You've already verified with this World ID — reopen Tcash; if it still asks, contact support.",
+  nullifier_replayed:
+    "You've already verified with this World ID. Reopen Tcash to continue.",
+  // request / RP config (developer-side)
+  malformed_request: "Tcash sent an invalid verification request. Please contact support.",
+  invalid_rp_signature: "Tcash's verification request was rejected. Please try again.",
+  rp_signature_expired: "The verification request expired. Please try again.",
+  timestamp_too_old: "The verification request expired. Please try again.",
+  duplicate_nonce: "Please try the World ID check again.",
+  unknown_rp: "Tcash isn't fully set up for World ID yet. Please contact support.",
+  inactive_rp: "Tcash's World ID setup is inactive. Please contact support.",
+  // environment / transport
   invalid_network:
-    "World ID network mismatch — make sure you're on the production World App, not the simulator.",
-  connection_failed:
-    "Couldn't reach World ID. Check your connection and try again.",
-  unexpected_response:
-    "World App returned an unexpected response. Please try again.",
-  generic_error: "World App couldn't start World ID. Please try again.",
-  failed_by_host_app: "World App couldn't start World ID. Please try again.",
+    "World ID environment mismatch — make sure you're on the production World App.",
+  connection_failed: "Couldn't reach World ID. Check your connection and try again.",
+  timeout: "World ID timed out. Please try again.",
+  inclusion_proof_pending: "Your World ID isn't ready yet — wait a moment and try again.",
+  inclusion_proof_failed: "World ID couldn't build your proof. Please try again.",
+  unexpected_response: "World App returned an unexpected response. Please try again.",
+  // proof succeeded but our backend callback failed
+  failed_by_host_app:
+    "Your proof was accepted, but Tcash couldn't record it. Please try again.",
+  generic_error: "World App couldn't complete World ID. Please try again.",
 };
 
 function worldIdErrorMessage(code) {
-  if (code && WORLD_ID_ERROR_HINTS[code]) {
-    return WORLD_ID_ERROR_HINTS[code];
-  }
-  return code
-    ? `World ID verification couldn't complete (${code}). You can try again.`
-    : "World ID verification was not completed. You can try again.";
+  const hint =
+    (code && WORLD_ID_ERROR_HINTS[code]) || "World ID verification didn't complete.";
+  return code ? `${hint} (${code})` : `${hint} You can try again.`;
 }
 
 /**
@@ -143,19 +164,17 @@ export function useHighValueVerification({ wallet } = {}) {
     }
   }, []);
 
-  const handleFail = useCallback((reason) => {
+  const handleFail = useCallback((reason, debugReport) => {
     pendingProceed.current = null;
     setOpen(false);
-    // IDKit hands onError either a string code or an { code, detail } object.
-    // Surface the real code (and a plain-language hint for the ones users
-    // actually hit) instead of one generic line — the old opaque message hid
-    // whether this was "not Orb-verified", "already verified", a cancel, or a
-    // real config/network fault, which is exactly what's needed to diagnose a
-    // prompt that won't open.
+    // IDKit's onError passes (code, debugReport); code may be a string or an
+    // { code } object. Surface the real code (always shown in the message) and
+    // log World's debugReport so a "couldn't start" failure is diagnosable
+    // without guessing.
     const code =
       typeof reason === "string" ? reason : reason?.code || reason?.message || "";
     // eslint-disable-next-line no-console
-    console.error("World ID verify error:", reason);
+    console.error("World ID verify error:", code, reason, debugReport);
     setError(worldIdErrorMessage(code));
   }, []);
 
