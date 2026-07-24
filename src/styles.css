@@ -4822,8 +4822,41 @@ input[type="number"] {
   border-radius: 16px;
   background: var(--panel);
   color: var(--text);
+  /* Subtle premium depth. These are the app's primary action — the brief
+     asks such surfaces to gain "soft ambient shadows / restrained
+     highlights" and not read flat. A tight contact shadow plus a soft
+     ambient layer lift the card off the paper; the hairline inset top
+     highlight catches light like a real material. Kept deliberately quiet
+     and scoped to just these two CTAs so depth isn't sprayed across the
+     app (the brief warns against overusing shadows). Warm-tinted, not
+     pure black, to match the material. Light-mode values below. */
+  box-shadow:
+    0 1px 2px rgba(18, 13, 8, 0.32),
+    0 12px 24px -16px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(246, 241, 231, 0.05);
   transition: border-color var(--t-fast) var(--ease-tender),
-    background var(--t-fast) var(--ease-tender);
+    background var(--t-fast) var(--ease-tender),
+    box-shadow var(--t-fast) var(--ease-tender),
+    transform var(--t-fast) var(--ease-tender);
+}
+
+:root[data-theme="light"] .tdr-act-card {
+  box-shadow:
+    0 1px 2px rgba(70, 46, 22, 0.07),
+    0 12px 24px -14px rgba(70, 46, 22, 0.16);
+}
+
+/* Tactile press — the card settles toward the surface and its lift
+   softens, so a tap feels physical rather than a flat colour swap. */
+.tdr-act-card:active {
+  transform: translateY(1px);
+  box-shadow:
+    0 1px 2px rgba(18, 13, 8, 0.3),
+    inset 0 1px 0 rgba(246, 241, 231, 0.04);
+}
+
+:root[data-theme="light"] .tdr-act-card:active {
+  box-shadow: 0 1px 2px rgba(70, 46, 22, 0.08);
 }
 
 .tdr-act-icon {

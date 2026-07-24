@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Icon from "../../components/icons/Icon";
+import AnimatedFigure from "../../components/interaction/AnimatedFigure";
+import { useAnimatedNumber } from "../../hooks/useAnimatedNumber";
 import { useExchangeRates } from "../../hooks/useExchangeRate";
 import {
   getCachedWorldWalletPortfolio,
@@ -162,11 +164,15 @@ export default function DashboardPage() {
     } catch { /* silent */ }
   };
 
-  const balanceLabel = useMemo(() => {
-    if (!user?.walletAddress)          return "KES —";
-    if (!hasLiveRates && !hasBalances) return "KES —";
-    return formatKES(walletBoard.totalKes);
-  }, [hasLiveRates, hasBalances, user?.walletAddress, walletBoard.totalKes]);
+  // The hero figure is a real number only once we have a wallet and
+  // either live rates or held balances; before that it's the "KES —"
+  // placeholder. Animate the total unconditionally (hook must run every
+  // render) and show it only in the real branch — the first meaningful
+  // value snaps, later refreshes roll (see useAnimatedNumber).
+  const showBalanceFigure =
+    Boolean(user?.walletAddress) && (hasLiveRates || hasBalances);
+  const animatedTotal = useAnimatedNumber(showBalanceFigure ? walletBoard.totalKes : 0);
+  const balanceLabel = showBalanceFigure ? formatKES(animatedTotal) : "KES —";
 
   const balanceSub = useMemo(() => {
     if (!user?.walletAddress)                             return "Connect World wallet";
@@ -201,8 +207,10 @@ export default function DashboardPage() {
         return {
           symbol,
           amountLabel: `${assetAmt(entry)} ${symbol}`,
-          valueLabel: hasRate && entry ? `≈ ${formatKES(balance * kes)}` : "≈ —",
-          rateLabel: hasRate ? formatKES(kes) : "—",
+          hasRate,
+          hasValue: hasRate && Boolean(entry),
+          valueKes: balance * kes,
+          rateKes: kes,
           perLabel: `per ${symbol}`,
         };
       }),
@@ -269,10 +277,27 @@ export default function DashboardPage() {
           <div className="tdr-hold-row" key={holding.symbol}>
             <div className="tdr-hold-cell">
               <span className="tdr-hold-amt">{holding.amountLabel}</span>
-              <span className="tdr-hold-sub">{holding.valueLabel}</span>
+              {holding.hasValue ? (
+                <AnimatedFigure
+                  className="tdr-hold-sub"
+                  value={holding.valueKes}
+                  prefix="≈ "
+                  format={formatKES}
+                />
+              ) : (
+                <span className="tdr-hold-sub">≈ —</span>
+              )}
             </div>
             <div className="tdr-hold-cell tdr-hold-cell-end">
-              <span className="tdr-hold-rate">{holding.rateLabel}</span>
+              {holding.hasRate ? (
+                <AnimatedFigure
+                  className="tdr-hold-rate"
+                  value={holding.rateKes}
+                  format={formatKES}
+                />
+              ) : (
+                <span className="tdr-hold-rate">—</span>
+              )}
               <span className="tdr-hold-sub">{holding.perLabel}</span>
             </div>
           </div>
