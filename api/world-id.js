@@ -199,5 +199,21 @@ export default async function handler(req, res) {
     return;
   }
 
+  // Best-effort client diagnostics: World App's in-app webview has no console
+  // we can read, so a device-only widget failure (IDKit onError code +
+  // debugReport) is invisible from the outside. The client posts it here so the
+  // exact failure lands in the serverless logs. Never trusted for any decision;
+  // pure observability, capped in size.
+  if (payload?.action === "debug") {
+    logEvent("worldid.client_debug", {
+      wallet: session.walletAddress,
+      code: String(payload?.code || "").slice(0, 120),
+      debug: payload?.debug ?? null,
+      ua: String(payload?.ua || "").slice(0, 240),
+    });
+    sendJson(res, 200, { ok: true });
+    return;
+  }
+
   sendJson(res, 400, { ok: false, error: "Unknown World ID action." });
 }

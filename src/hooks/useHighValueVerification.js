@@ -175,6 +175,26 @@ export function useHighValueVerification({ wallet } = {}) {
       typeof reason === "string" ? reason : reason?.code || reason?.message || "";
     // eslint-disable-next-line no-console
     console.error("World ID verify error:", code, reason, debugReport);
+    // World App's webview has no console we can read, so post the real code and
+    // IDKit's debugReport to the server — it's the only way to see a device-only
+    // failure from the outside. Best-effort; keepalive so it sends even if this
+    // component unmounts as the widget closes.
+    try {
+      fetch("/api/world-id", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        keepalive: true,
+        body: JSON.stringify({
+          action: "debug",
+          code,
+          debug: debugReport ?? (reason && typeof reason === "object" ? reason : null),
+          ua: typeof navigator !== "undefined" ? navigator.userAgent : "",
+        }),
+      }).catch(() => {});
+    } catch {
+      /* diagnostics are best-effort */
+    }
     setError(worldIdErrorMessage(code));
   }, []);
 
