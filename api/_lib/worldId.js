@@ -1,5 +1,6 @@
 import { list, put } from "@vercel/blob";
 import { signRequest } from "@worldcoin/idkit-core/signing";
+import { privateKeyToAccount } from "viem/accounts";
 
 // World ID 4.0 (RP-signatures) verification for high-value orders.
 //
@@ -71,7 +72,33 @@ export function worldIdConfigDiagnostics() {
     store: storeConfigured(),
     redis: redisConfigured(),
     blob: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
+    // The PUBLIC address the configured signing key derives to. Safe to expose
+    // (it's the on-chain-registered RP signer, public by design) and never the
+    // key itself. Exists so a key↔registered-signer mismatch — which makes
+    // World App reject every RP context with a generic failure — is verifiable
+    // from outside instead of guessed. Compare against the Developer Portal's
+    // registered signer_address.
+    signerAddress: worldIdSignerAddress(),
   };
+}
+
+/**
+ * Derive the public wallet address of the configured signing key. Returns null
+ * if unset or malformed. Only the address is ever returned — never the key.
+ */
+export function worldIdSignerAddress() {
+  const key = getSigningKey();
+
+  if (!key) {
+    return null;
+  }
+
+  try {
+    const normalized = key.startsWith("0x") ? key : `0x${key}`;
+    return privateKeyToAccount(normalized).address;
+  } catch {
+    return null;
+  }
 }
 
 async function redisCommand(command) {
